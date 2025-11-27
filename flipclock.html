@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Clock</title>
+</head>
+<body>
+
+<div id="clock"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/flipclock@^1/dist/FlipClock.umd.js"></script>
+<script>
+	const { clock, css, flipClock, theme } = FlipClock;
+
+	const parent = document.querySelector('#clock');
+
+	flipClock({
+    parent,
+    face: clock({
+        date: new Date('2025-01-01 18:30'),
+        format: '[HH]:[mm]:[ss]'
+    }),
+    theme: theme({
+        dividers: ':',
+        css: css({
+            fontSize: '3rem'
+        })
+    })
+});
+</script>
+
+</body>
+</html>
