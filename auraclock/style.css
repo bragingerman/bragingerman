@@ -43,3 +43,58 @@ body {
   bottom: 20px;
   right: 20px;
 }
+
+/* Медиа-запросы для адаптивности */
+/* Планшеты */
+@media (max-width: 1024px) {
+  #clock {
+    font-size: 150px;
+    margin-left: 20px;
+  }
+  
+  #am-pm {
+    font-size: 24px;
+  }
+}
+
+/* Мобильные устройства (планшеты в портретной ориентации) */
+@media (max-width: 768px) {
+  #clock {
+    font-size: 150px;
+    margin-left: 28px;
+  }
+  
+  #am-pm {
+    font-size: 20px;
+  }
+}
+
+/* Мобильные устройства (телефоны) */
+@media (max-width: 480px) {
+  #clock {
+    font-size: 90px;
+    margin-left: 18px;
+  }
+  
+  #am-pm {
+    font-size: 16px;
+  }
+  
+  #switch-btn {
+    bottom: 10px;
+    right: 10px;
+    font-size: 14px;
+  }
+}
+
+/* Очень маленькие экраны */
+@media (max-width: 320px) {
+  #clock {
+    font-size: 60px;
+    margin-left: 11px;
+  }
+  
+  #am-pm {
+    font-size: 14px;
+  }
+}
