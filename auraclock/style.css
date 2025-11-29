@@ -6,9 +6,7 @@ body {
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background-image: url('./aura.png');
-  background-size: cover;
-  background-position: center;
+  background: url('./aura.png') center/contain no-repeat;
   overflow-x: hidden; /* Hide horizontal scrollbar */
   overflow-y: hidden; /* Show vertical scrollbar if needed */
 }
