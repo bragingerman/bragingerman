@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Responsive 3D Embed</title>
+
+	<style>
+		.embed-wrapper {
+			width: 100%;
+			max-width: 100%;
+			aspect-ratio: 16 / 9; /* можно 4/3 или 1/1 */
+			position: relative;
+		}
+
+		.embed-wrapper iframe {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			border: 0;
+		}
+	</style>
+</head>
+<body>
+
+<div class="embed-wrapper">
+	<iframe 
+		title="3D Model"
+		allow="autoplay; fullscreen; xr-spatial-tracking"
+		mozallowfullscreen="true"
+		webkitallowfullscreen="true"
+		allowfullscreen
+		src="https://sketchfab.com/models/94b24a60dc1b48248de50bf087c0f042/embed?autostart=1&ui_theme=dark&dnt=1">
+	</iframe>
+</div>
+
+</body>
+</html>
