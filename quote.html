@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Smart Clock</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            background: #f7f4f9;
+            font-family: "Roboto", sans-serif;
+        }
+
+        .center-wrap {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .clock-box {
+            background: #4d2a42;
+            padding: 25px 35px;
+            border-radius: 14px;
+            color: #fff;
+            text-align: center;
+            box-shadow: 3px 3px 7px rgba(0,0,0,0.25);
+            transition: transform .2s ease;
+            width: 85vw;
+            max-width: 420px;
+        }
+
+        .clock-box:hover {
+            transform: translateY(3px);
+            box-shadow: none;
+        }
+
+        .greeting {
+            font-family: "Lobster", cursive;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .today {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .time-row {
+            font-size: 2.3rem;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        .unit {
+            display: inline-block;
+            min-width: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="center-wrap">
+    <div class="clock-box">
+        <span id="hello" class="greeting"></span>
+        <div id="day" class="today"></div>
+
+        <div class="time-row">
+            <span id="h" class="unit"></span> :
+            <span id="m" class="unit"></span> :
+            <span id="s" class="unit"></span>
+        </div>
+    </div>
+</div>
+
+<script>
+    function pad(n) {
+        return n < 10 ? "0" + n : n;
+    }
+
+    function convertHour(h) {
+        if (h === 0) return 12;
+        return h > 12 ? h - 12 : h;
+    }
+
+    function getGreeting(h) {
+        if (h < 12) return "Good Morning";
+        if (h < 18) return "Good Afternoon";
+        return "Good Evening";
+    }
+
+    function updateClock() {
+        const now = new Date();
+
+        const h24 = now.getHours();
+        const h = convertHour(h24);
+        const m = now.getMinutes();
+        const s = now.getSeconds();
+
+        document.getElementById("hello").textContent = getGreeting(h24);
+        document.getElementById("day").textContent = now.toDateString();
+
+        document.getElementById("h").textContent = pad(h);
+        document.getElementById("m").textContent = pad(m);
+        document.getElementById("s").textContent = pad(s) + (h24 >= 12 ? " PM" : " AM");
+
+        requestAnimationFrame(updateClock);
+    }
+
+    updateClock();
+</script>
+
+</body>
+</html>
