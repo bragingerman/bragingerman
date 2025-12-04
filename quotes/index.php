@@ -1,37 +1,26 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Slider</title>
+<title>AJAX Slider With Themes</title>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
 <style>
 :root {
-    --dark-bg: #191919;
-    --light-bg: #ffffff;
-
-    --dark-color: #ffffff;
-    --light-color: #191919;
+    --bg: #191919;
+    --fg: #fff;
 }
 
-/* Тёмная тема */
-html[data-theme="dark"] {
-    --bg: var(--dark-bg);
-    --color: var(--dark-color);
-}
-
-/* Светлая тема */
-html[data-theme="light"] {
-    --bg: var(--light-bg);
-    --color: var(--light-color);
+.light {
+    --bg: #fff;
+    --fg: #191919;
 }
 
 body {
     margin: 0;
     background: var(--bg);
-    color: var(--color);
-    transition: background 0.3s, color 0.3s;
+    transition: background 0.3s;
 }
 
 .swiper {
@@ -53,90 +42,67 @@ body {
     border-radius: 12px;
 }
 
-/* Отключаем стандартные кнопки Swiper */
+/* убираем точки */
+.swiper-pagination { display: none !important; }
+
+/* стрелки swiper */
 .swiper-button-next,
 .swiper-button-prev {
-    background: none !important;
-    width: 60px !important;
-    height: 60px !important;
+    color: var(--fg) !important;
+    fill: var(--fg) !important;
+    stroke: var(--fg) !important;
+    z-index: 5;
 }
 
-/* SVG стрелки */
-.arrow {
-    width: 60px;
-    height: 60px;
-    fill: var(--color);
-    transition: fill 0.3s;
-}
-
-/* Переключатель темы */
-#theme-toggle {
+/* переключатель темы */
+#themeToggle {
     position: fixed;
     right: 20px;
     bottom: 20px;
-    width: 45px;
-    height: 45px;
-    background: var(--bg);
-    border: 2px solid var(--color);
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
+    background: var(--fg);
+    color: var(--bg);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: background 0.3s, border 0.3s;
+    font-size: 20px;
+    z-index: 99999;
+    transition: 0.2s;
 }
-
-#theme-toggle svg {
-    width: 25px;
-    height: 25px;
-    fill: var(--color);
-    transition: fill 0.3s;
-}
-
-.swiper-pagination { display: none !important; }
 </style>
 
 </head>
 <body>
 
-<!-- Переключатель темы -->
-<div id="theme-toggle">
-    <svg id="theme-icon" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="5"></circle>
-    </svg>
-</div>
-
-<!-- Слайдер -->
 <div class="swiper">
     <div class="swiper-wrapper" id="slider-wrapper"></div>
 
-    <div class="swiper-button-next">
-        <svg class="arrow" viewBox="0 0 24 24">
-            <path d="M8 4l8 8-8 8"></path>
-        </svg>
-    </div>
-
-    <div class="swiper-button-prev">
-        <svg class="arrow" viewBox="0 0 24 24">
-            <path d="M16 4L8 12l8 8"></path>
-        </svg>
-    </div>
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
 </div>
+
+<div id="themeToggle">🌓</div>
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
 <script>
-// Определяем системную тему
-const prefers = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
-document.documentElement.setAttribute("data-theme", prefers);
+// ----------------------
+// ТЕМА ПО УМОЛЧАНИЮ
+// ----------------------
+if (window.matchMedia("(prefers-color-scheme: light)").matches) {
+    document.body.classList.add("light");
+}
 
-// Переключатель темы
-document.getElementById("theme-toggle").onclick = () => {
-    const current = document.documentElement.getAttribute("data-theme");
-    document.documentElement.setAttribute("data-theme", current === "dark" ? "light" : "dark");
+document.getElementById("themeToggle").onclick = () => {
+    document.body.classList.toggle("light");
 };
 
-// Загрузка списка изображений
+// ----------------------
+// AJAX ЗАГРУЗКА КАРТИНОК
+// ----------------------
 fetch("load_images.php")
     .then(r => r.json())
     .then(files => {
@@ -145,7 +111,7 @@ fetch("load_images.php")
         files.forEach(file => {
             wrapper.innerHTML += `
                 <div class="swiper-slide">
-                    <img src="images/${file}"/>
+                    <img src="images/${file}">
                 </div>
             `;
         });
