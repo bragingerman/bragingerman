@@ -62,7 +62,7 @@ body {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: var(--fg);
+    background: var(--bg);
     color: var(--bg);
     display: flex;
     align-items: center;
