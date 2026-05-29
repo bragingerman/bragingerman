@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
- 
+
 :root {
   --bg: #f0f0f0;
   --controls-bg: #e8e8e8;
@@ -19,7 +19,7 @@
   --edit-text: #333;
   --edit-muted: #999;
 }
- 
+
 /* System dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
@@ -34,7 +34,7 @@
     --edit-muted: #666;
   }
 }
- 
+
 /* Manual override — force light */
 [data-theme="light"] {
   --bg: #f0f0f0;
@@ -47,7 +47,7 @@
   --edit-text: #333;
   --edit-muted: #999;
 }
- 
+
 /* Manual override — force dark */
 [data-theme="dark"] {
   --bg: #222222;
@@ -60,14 +60,14 @@
   --edit-text: #ddd;
   --edit-muted: #666;
 }
- 
+
 html, body {
   width: 100%; height: 100%;
   background: var(--bg);
   transition: background 0.3s;
   font-family: -apple-system, sans-serif;
 }
- 
+
 .wrapper {
   display: flex;
   flex-direction: column;
@@ -76,7 +76,7 @@ html, body {
   padding: 16px 16px 12px;
   gap: 10px;
 }
- 
+
 /* SLIDE CARD */
 .slide-card {
   width: 100%;
@@ -87,7 +87,7 @@ html, body {
   overflow: hidden;
   flex-shrink: 0;
 }
- 
+
 .slide {
   position: absolute;
   inset: 0;
@@ -100,7 +100,7 @@ html, body {
   pointer-events: none;
 }
 .slide.active { opacity: 1; pointer-events: auto; }
- 
+
 .slide-bg {
   position: absolute;
   inset: 0;
@@ -114,7 +114,7 @@ html, body {
   inset: 0;
   background: radial-gradient(ellipse 75% 65% at 50% 44%, rgba(255,215,195,0.35) 0%, transparent 62%);
 }
- 
+
 .slide-text {
   position: relative;
   z-index: 1;
@@ -127,7 +127,7 @@ html, body {
   letter-spacing: 0.025em;
   text-shadow: 0 1px 4px rgba(150,50,80,0.2), 0 0 28px rgba(255,255,255,0.12);
 }
- 
+
 /* BOTTOM CONTROLS — pill bar */
 .controls {
   width: 100%;
@@ -141,7 +141,7 @@ html, body {
   gap: 8px;
   transition: background 0.3s;
 }
- 
+
 .pill {
   display: flex;
   align-items: center;
@@ -156,7 +156,7 @@ html, body {
   font-family: -apple-system, sans-serif;
 }
 .pill:hover { background: var(--pill-hover); }
- 
+
 .pill-arrow {
   width: 72px;
   height: 34px;
@@ -170,11 +170,17 @@ html, body {
   font-weight: 500;
   gap: 6px;
 }
+.pill-theme {
+  width: 34px;
+  height: 34px;
+  font-size: 15px;
+  flex-shrink: 0;
+}
 .pill-icon {
   font-size: 14px;
   line-height: 1;
 }
- 
+
 /* EDIT PANEL */
 .edit-panel {
   width: 100%;
@@ -188,7 +194,7 @@ html, body {
   gap: 8px;
 }
 .edit-panel.visible { display: flex; }
- 
+
 .edit-top {
   display: flex;
   align-items: center;
@@ -219,7 +225,7 @@ html, body {
 }
 .edit-btn:hover { color: var(--edit-text); }
 .edit-btn.danger:hover { color: #d44; border-color: rgba(220,60,60,0.3); }
- 
+
 textarea.edit-input {
   width: 100%;
   font-family: 'Playfair Display', Georgia, serif;
@@ -236,25 +242,25 @@ textarea.edit-input::placeholder { color: var(--edit-muted); }
 </style>
 </head>
 <body>
- 
+
 <div class="wrapper">
   <div class="slide-card" id="slideCard"></div>
- 
+
   <div class="controls">
     <button class="pill pill-arrow" id="btnPrev" aria-label="Previous">&#8249;</button>
     <button class="pill pill-center" id="btnMenu" onclick="toggleEdit()">
       <span class="pill-icon">◷</span>
       <span id="menuLabel">Edit slides</span>
     </button>
+    <button class="pill pill-theme" onclick="toggleTheme()" aria-label="Toggle theme" id="btnTheme">☀</button>
     <button class="pill pill-arrow" id="btnNext" aria-label="Next">&#8250;</button>
   </div>
- 
+
   <div class="edit-panel" id="editPanel">
     <div class="edit-top">
       <span class="edit-label" id="editSlideNum">Slide 1</span>
       <div class="edit-actions">
         <button class="edit-btn" onclick="addSlide()">+ Add</button>
-        <button class="edit-btn" onclick="toggleTheme()">Light / Dark</button>
         <button class="edit-btn danger" onclick="deleteSlide()">Delete</button>
       </div>
     </div>
@@ -262,13 +268,13 @@ textarea.edit-input::placeholder { color: var(--edit-muted); }
       oninput="updateCurrentText()"></textarea>
   </div>
 </div>
- 
+
 <script>
 const KEY = 'notion_slider_v2';
 let slides = [], current = 0, editOpen = false;
 // null = follow system, 'light' or 'dark' = manual override
 let themeOverride = null;
- 
+
 function load() {
   try {
     const d = JSON.parse(localStorage.getItem(KEY));
@@ -285,11 +291,11 @@ function load() {
     ];
   }
 }
- 
+
 function save() {
   try { localStorage.setItem(KEY, JSON.stringify({ slides, themeOverride })); } catch(e) {}
 }
- 
+
 function applyTheme() {
   if (themeOverride) {
     document.documentElement.setAttribute('data-theme', themeOverride);
@@ -297,9 +303,16 @@ function applyTheme() {
     document.documentElement.removeAttribute('data-theme');
   }
 }
- 
+
+function updateThemeIcon() {
+  const btn = document.getElementById('btnTheme');
+  if (!btn) return;
+  const effectiveDark = themeOverride === 'dark' ||
+    (themeOverride === null && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  btn.textContent = effectiveDark ? '☾' : '☀';
+}
+
 function toggleTheme() {
-  // cycle: system → light → dark → system
   const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   if (themeOverride === null) {
     themeOverride = systemDark ? 'light' : 'dark';
@@ -309,18 +322,19 @@ function toggleTheme() {
     themeOverride = null;
   }
   applyTheme();
+  updateThemeIcon();
   save();
 }
- 
+
 // Follow system changes if no manual override
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-  if (themeOverride === null) applyTheme();
+  if (themeOverride === null) { applyTheme(); updateThemeIcon(); }
 });
- 
+
 function esc(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
 }
- 
+
 function render() {
   const card = document.getElementById('slideCard');
   card.innerHTML = '';
@@ -332,7 +346,20 @@ function render() {
   });
   syncEdit();
 }
- 
+
+const AUTOPLAY_MS = 4000;
+let autoTimer = null;
+
+function startAutoplay() {
+  stopAutoplay();
+  autoTimer = setInterval(() => goTo(current + 1), AUTOPLAY_MS);
+}
+
+function stopAutoplay() {
+  clearInterval(autoTimer);
+  autoTimer = null;
+}
+
 function goTo(idx) {
   const els = document.querySelectorAll('.slide');
   els[current]?.classList.remove('active');
@@ -340,19 +367,20 @@ function goTo(idx) {
   els[current]?.classList.add('active');
   syncEdit();
 }
- 
+
 function syncEdit() {
   document.getElementById('editSlideNum').textContent = `Slide ${current + 1} of ${slides.length}`;
   document.getElementById('editInput').value = slides[current] || '';
 }
- 
+
 function toggleEdit() {
   editOpen = !editOpen;
   document.getElementById('editPanel').classList.toggle('visible', editOpen);
   document.getElementById('menuLabel').textContent = editOpen ? 'Done' : 'Edit slides';
-  if (editOpen) syncEdit();
+  if (editOpen) { stopAutoplay(); syncEdit(); }
+  else startAutoplay();
 }
- 
+
 function updateCurrentText() {
   const val = document.getElementById('editInput').value;
   slides[current] = val;
@@ -360,7 +388,7 @@ function updateCurrentText() {
   if (el) el.querySelector('.slide-text').innerHTML = esc(val);
   save();
 }
- 
+
 function addSlide() {
   slides.splice(current + 1, 0, '');
   current = current + 1;
@@ -368,7 +396,7 @@ function addSlide() {
   // focus textarea so user can type immediately
   document.getElementById('editInput').focus();
 }
- 
+
 function deleteSlide() {
   if (slides.length <= 1) return;
   slides.splice(current, 1);
@@ -376,13 +404,15 @@ function deleteSlide() {
   render();
   save();
 }
- 
+
 document.getElementById('btnPrev').onclick = () => goTo(current - 1);
 document.getElementById('btnNext').onclick = () => goTo(current + 1);
- 
+
 load();
 applyTheme();
 render();
+updateThemeIcon();
+startAutoplay();
 </script>
 </body>
 </html>
