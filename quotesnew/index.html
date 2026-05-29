@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Affirmation Slider</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+:root {
+  --bg: #f0f0f0;
+  --controls-bg: #e8e8e8;
+  --pill-bg: #d8d8d8;
+  --pill-hover: #ccc;
+  --pill-text: #555;
+  --edit-bg: rgba(255,255,255,0.95);
+  --edit-border: rgba(0,0,0,0.1);
+  --edit-text: #333;
+  --edit-muted: #999;
+}
+ 
+/* System dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #222222;
+    --controls-bg: #2e2e2e;
+    --pill-bg: #3a3a3a;
+    --pill-hover: #444;
+    --pill-text: #aaa;
+    --edit-bg: rgba(40,40,40,0.98);
+    --edit-border: rgba(255,255,255,0.1);
+    --edit-text: #ddd;
+    --edit-muted: #666;
+  }
+}
+ 
+/* Manual override — force light */
+[data-theme="light"] {
+  --bg: #f0f0f0;
+  --controls-bg: #e8e8e8;
+  --pill-bg: #d8d8d8;
+  --pill-hover: #ccc;
+  --pill-text: #555;
+  --edit-bg: rgba(255,255,255,0.95);
+  --edit-border: rgba(0,0,0,0.1);
+  --edit-text: #333;
+  --edit-muted: #999;
+}
+ 
+/* Manual override — force dark */
+[data-theme="dark"] {
+  --bg: #222222;
+  --controls-bg: #2e2e2e;
+  --pill-bg: #3a3a3a;
+  --pill-hover: #444;
+  --pill-text: #aaa;
+  --edit-bg: rgba(40,40,40,0.98);
+  --edit-border: rgba(255,255,255,0.1);
+  --edit-text: #ddd;
+  --edit-muted: #666;
+}
+ 
+html, body {
+  width: 100%; height: 100%;
+  background: var(--bg);
+  transition: background 0.3s;
+  font-family: -apple-system, sans-serif;
+}
+ 
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 16px 16px 12px;
+  gap: 10px;
+}
+ 
+/* SLIDE CARD */
+.slide-card {
+  width: 100%;
+  max-width: 460px;
+  aspect-ratio: 1 / 1;
+  border-radius: 22px;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+ 
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 28px;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+ 
+.slide-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 58% 52% at 50% 48%, rgba(255,238,215,0.9) 0%, transparent 68%),
+    linear-gradient(145deg, #e9a8bc 0%, #d585a0 35%, #c97aa8 55%, #d68aaa 80%, #ecbac6 100%);
+}
+.slide-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 75% 65% at 50% 44%, rgba(255,215,195,0.35) 0%, transparent 62%);
+}
+ 
+.slide-text {
+  position: relative;
+  z-index: 1;
+  color: #fff;
+  text-align: center;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(16px, 5vw, 26px);
+  font-weight: 700;
+  line-height: 1.38;
+  letter-spacing: 0.025em;
+  text-shadow: 0 1px 4px rgba(150,50,80,0.2), 0 0 28px rgba(255,255,255,0.12);
+}
+ 
+/* BOTTOM CONTROLS — pill bar */
+.controls {
+  width: 100%;
+  max-width: 460px;
+  background: var(--controls-bg);
+  border-radius: 18px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  transition: background 0.3s;
+}
+ 
+.pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background: var(--pill-bg);
+  border: none;
+  border-radius: 50px;
+  color: var(--pill-text);
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: -apple-system, sans-serif;
+}
+.pill:hover { background: var(--pill-hover); }
+ 
+.pill-arrow {
+  width: 72px;
+  height: 34px;
+  font-size: 18px;
+  font-weight: 400;
+}
+.pill-center {
+  flex: 1;
+  height: 34px;
+  font-size: 13px;
+  font-weight: 500;
+  gap: 6px;
+}
+.pill-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+ 
+/* EDIT PANEL */
+.edit-panel {
+  width: 100%;
+  max-width: 460px;
+  background: var(--edit-bg);
+  border: 1px solid var(--edit-border);
+  border-radius: 16px;
+  padding: 12px;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+}
+.edit-panel.visible { display: flex; }
+ 
+.edit-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.edit-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--edit-muted);
+}
+.edit-actions {
+  display: flex;
+  gap: 6px;
+}
+.edit-btn {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--edit-muted);
+  background: none;
+  border: 1px solid var(--edit-border);
+  border-radius: 7px;
+  padding: 3px 9px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.edit-btn:hover { color: var(--edit-text); }
+.edit-btn.danger:hover { color: #d44; border-color: rgba(220,60,60,0.3); }
+ 
+textarea.edit-input {
+  width: 100%;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--edit-text);
+  background: transparent;
+  border: none;
+  resize: none;
+  outline: none;
+  min-height: 64px;
+}
+textarea.edit-input::placeholder { color: var(--edit-muted); }
+</style>
+</head>
+<body>
+ 
+<div class="wrapper">
+  <div class="slide-card" id="slideCard"></div>
+ 
+  <div class="controls">
+    <button class="pill pill-arrow" id="btnPrev" aria-label="Previous">&#8249;</button>
+    <button class="pill pill-center" id="btnMenu" onclick="toggleEdit()">
+      <span class="pill-icon">◷</span>
+      <span id="menuLabel">Edit slides</span>
+    </button>
+    <button class="pill pill-arrow" id="btnNext" aria-label="Next">&#8250;</button>
+  </div>
+ 
+  <div class="edit-panel" id="editPanel">
+    <div class="edit-top">
+      <span class="edit-label" id="editSlideNum">Slide 1</span>
+      <div class="edit-actions">
+        <button class="edit-btn" onclick="addSlide()">+ Add</button>
+        <button class="edit-btn" onclick="toggleTheme()">Light / Dark</button>
+        <button class="edit-btn danger" onclick="deleteSlide()">Delete</button>
+      </div>
+    </div>
+    <textarea class="edit-input" id="editInput" placeholder="Type your affirmation…" rows="3"
+      oninput="updateCurrentText()"></textarea>
+  </div>
+</div>
+ 
+<script>
+const KEY = 'notion_slider_v2';
+let slides = [], current = 0, editOpen = false;
+// null = follow system, 'light' or 'dark' = manual override
+let themeOverride = null;
+ 
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem(KEY));
+    if (d) {
+      slides = d.slides;
+      themeOverride = d.themeOverride ?? null;
+    }
+  } catch(e) {}
+  if (!slides || !slides.length) {
+    slides = [
+      'I care about my health, not just the number on the scale',
+      'I am enough, exactly as I am',
+      'Every day I grow stronger'
+    ];
+  }
+}
+ 
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify({ slides, themeOverride })); } catch(e) {}
+}
+ 
+function applyTheme() {
+  if (themeOverride) {
+    document.documentElement.setAttribute('data-theme', themeOverride);
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+  }
+}
+ 
+function toggleTheme() {
+  // cycle: system → light → dark → system
+  const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (themeOverride === null) {
+    themeOverride = systemDark ? 'light' : 'dark';
+  } else if (themeOverride === 'light') {
+    themeOverride = 'dark';
+  } else {
+    themeOverride = null;
+  }
+  applyTheme();
+  save();
+}
+ 
+// Follow system changes if no manual override
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+  if (themeOverride === null) applyTheme();
+});
+ 
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+ 
+function render() {
+  const card = document.getElementById('slideCard');
+  card.innerHTML = '';
+  slides.forEach((text, i) => {
+    const s = document.createElement('div');
+    s.className = 'slide' + (i === current ? ' active' : '');
+    s.innerHTML = `<div class="slide-bg"></div><div class="slide-text">${esc(text)}</div>`;
+    card.appendChild(s);
+  });
+  syncEdit();
+}
+ 
+function goTo(idx) {
+  const els = document.querySelectorAll('.slide');
+  els[current]?.classList.remove('active');
+  current = ((idx % slides.length) + slides.length) % slides.length;
+  els[current]?.classList.add('active');
+  syncEdit();
+}
+ 
+function syncEdit() {
+  document.getElementById('editSlideNum').textContent = `Slide ${current + 1} of ${slides.length}`;
+  document.getElementById('editInput').value = slides[current] || '';
+}
+ 
+function toggleEdit() {
+  editOpen = !editOpen;
+  document.getElementById('editPanel').classList.toggle('visible', editOpen);
+  document.getElementById('menuLabel').textContent = editOpen ? 'Done' : 'Edit slides';
+  if (editOpen) syncEdit();
+}
+ 
+function updateCurrentText() {
+  const val = document.getElementById('editInput').value;
+  slides[current] = val;
+  const el = document.querySelectorAll('.slide')[current];
+  if (el) el.querySelector('.slide-text').innerHTML = esc(val);
+  save();
+}
+ 
+function addSlide() {
+  slides.splice(current + 1, 0, '');
+  current = current + 1;
+  render();
+  // focus textarea so user can type immediately
+  document.getElementById('editInput').focus();
+}
+ 
+function deleteSlide() {
+  if (slides.length <= 1) return;
+  slides.splice(current, 1);
+  if (current >= slides.length) current = slides.length - 1;
+  render();
+  save();
+}
+ 
+document.getElementById('btnPrev').onclick = () => goTo(current - 1);
+document.getElementById('btnNext').onclick = () => goTo(current + 1);
+ 
+load();
+applyTheme();
+render();
+</script>
+</body>
+</html>
