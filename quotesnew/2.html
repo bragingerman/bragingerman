@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Affirmation Slider</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ffffff;
+  --pill-bg: rgba(0,0,0,0.12);
+  --pill-hover: rgba(0,0,0,0.2);
+  --pill-text: #333;
+  --overlay-bg: rgba(255,255,255,0.7);
+  --overlay-border: rgba(0,0,0,0.08);
+  --edit-text: #222;
+  --edit-muted: #999;
+  --edit-btn-border: rgba(0,0,0,0.15);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #191919;
+    --pill-bg: rgba(255,255,255,0.12);
+    --pill-hover: rgba(255,255,255,0.2);
+    --pill-text: #ccc;
+    --overlay-bg: rgba(25,25,25,0.75);
+    --overlay-border: rgba(255,255,255,0.08);
+    --edit-text: #e8e8e8;
+    --edit-muted: #666;
+    --edit-btn-border: rgba(255,255,255,0.15);
+  }
+}
+
+[data-theme="light"] {
+  --bg: #ffffff;
+  --pill-bg: rgba(0,0,0,0.12);
+  --pill-hover: rgba(0,0,0,0.2);
+  --pill-text: #333;
+  --overlay-bg: rgba(255,255,255,0.7);
+  --overlay-border: rgba(0,0,0,0.08);
+  --edit-text: #222;
+  --edit-muted: #999;
+  --edit-btn-border: rgba(0,0,0,0.15);
+}
+
+[data-theme="dark"] {
+  --bg: #191919;
+  --pill-bg: rgba(255,255,255,0.12);
+  --pill-hover: rgba(255,255,255,0.2);
+  --pill-text: #ccc;
+  --overlay-bg: rgba(25,25,25,0.75);
+  --overlay-border: rgba(255,255,255,0.08);
+  --edit-text: #e8e8e8;
+  --edit-muted: #666;
+  --edit-btn-border: rgba(255,255,255,0.15);
+}
+
+html, body {
+  width: 100%; height: 100%;
+  background: var(--bg);
+  transition: background 0.3s;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 16px;
+}
+
+/* SLIDE CARD — все UI поверх него */
+.slide-card {
+  width: 100%;
+  max-width: 460px;
+  aspect-ratio: 1 / 1;
+  border-radius: 9%;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* bg.png покрывает весь слайд */
+.slide-bg-img {
+  position: absolute;
+  inset: 0;
+  background: url('bg.png') center center / cover no-repeat;
+  z-index: 0;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 28px;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+.slide-text {
+  color: #fff;
+  text-align: center;
+  font-family: 'Lora', Georgia, serif;
+  font-size: clamp(16px, 5vw, 26px);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.25), 0 0 32px rgba(0,0,0,0.1);
+}
+
+/* CONTROLS — поверх слайда, снизу */
+.controls {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--overlay-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--overlay-border);
+  border-radius: 50px;
+  padding: 8px 10px;
+}
+
+.pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background: var(--pill-bg);
+  border: none;
+  border-radius: 50px;
+  color: var(--pill-text);
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: -apple-system, sans-serif;
+}
+.pill:hover { background: var(--pill-hover); }
+
+.pill-arrow {
+  width: 64px;
+  height: 30px;
+  font-size: 18px;
+}
+.pill-center {
+  flex: 1;
+  height: 30px;
+  font-size: 12px;
+  font-weight: 500;
+  gap: 5px;
+}
+.pill-theme {
+  width: 30px;
+  height: 30px;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* EDIT PANEL — поверх слайда, снизу над controls */
+.edit-panel {
+  position: absolute;
+  bottom: 64px; /* выше controls */
+  left: 12px;
+  right: 12px;
+  z-index: 9;
+  background: var(--overlay-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--overlay-border);
+  border-radius: 18px;
+  padding: 14px;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+}
+.edit-panel.visible { display: flex; }
+
+.edit-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.edit-label {
+  font-family: -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--edit-muted);
+}
+.edit-actions { display: flex; gap: 6px; }
+.edit-btn {
+  font-family: -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--edit-muted);
+  background: none;
+  border: 1px solid var(--edit-btn-border);
+  border-radius: 7px;
+  padding: 3px 9px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.edit-btn:hover { color: var(--edit-text); }
+.edit-btn.danger:hover { color: #d44; border-color: rgba(220,60,60,0.3); }
+
+textarea.edit-input {
+  width: 100%;
+  font-family: 'Lora', Georgia, serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--edit-text);
+  background: transparent;
+  border: none;
+  resize: none;
+  outline: none;
+  min-height: 60px;
+}
+textarea.edit-input::placeholder { color: var(--edit-muted); }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <div class="slide-card" id="slideCard">
+    <div class="slide-bg-img"></div>
+    <!-- slides injected here -->
+
+    <div class="edit-panel" id="editPanel">
+      <div class="edit-top">
+        <span class="edit-label" id="editSlideNum">Slide 1</span>
+        <div class="edit-actions">
+          <button class="edit-btn" onclick="addSlide()">+ Add</button>
+          <button class="edit-btn danger" onclick="deleteSlide()">Delete</button>
+        </div>
+      </div>
+      <textarea class="edit-input" id="editInput" placeholder="Type your affirmation…" rows="3"
+        oninput="updateCurrentText()"></textarea>
+    </div>
+
+    <div class="controls">
+      <button class="pill pill-arrow" id="btnPrev">&#8249;</button>
+      <button class="pill pill-center" id="btnMenu" onclick="toggleEdit()">
+        <span>◷</span>
+        <span id="menuLabel">Edit</span>
+      </button>
+      <button class="pill pill-theme" onclick="toggleTheme()" id="btnTheme">☀</button>
+      <button class="pill pill-arrow" id="btnNext">&#8250;</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const KEY = 'notion_slider_v3';
+let slides = [], current = 0, editOpen = false, themeOverride = null;
+
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem(KEY));
+    if (d) { slides = d.slides; themeOverride = d.themeOverride ?? null; }
+  } catch(e) {}
+  if (!slides || !slides.length) {
+    slides = [
+      'I care about my health, not just the number on the scale',
+      'I am enough, exactly as I am',
+      'Every day I grow stronger'
+    ];
+  }
+}
+
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify({ slides, themeOverride })); } catch(e) {}
+}
+
+function applyTheme() {
+  if (themeOverride) document.documentElement.setAttribute('data-theme', themeOverride);
+  else document.documentElement.removeAttribute('data-theme');
+}
+
+function updateThemeIcon() {
+  const dark = themeOverride === 'dark' ||
+    (themeOverride === null && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  document.getElementById('btnTheme').textContent = dark ? '☾' : '☀';
+}
+
+function toggleTheme() {
+  const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (themeOverride === null) themeOverride = sysDark ? 'light' : 'dark';
+  else if (themeOverride === 'light') themeOverride = 'dark';
+  else themeOverride = null;
+  applyTheme(); updateThemeIcon(); save();
+}
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+  if (!themeOverride) { applyTheme(); updateThemeIcon(); }
+});
+
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+function render() {
+  const card = document.getElementById('slideCard');
+  card.querySelectorAll('.slide').forEach(s => s.remove());
+  const editPanel = document.getElementById('editPanel');
+  const controls = document.querySelector('.controls');
+  slides.forEach((text, i) => {
+    const s = document.createElement('div');
+    s.className = 'slide' + (i === current ? ' active' : '');
+    s.innerHTML = `<div class="slide-text">${esc(text)}</div>`;
+    card.insertBefore(s, editPanel);
+  });
+  syncEdit();
+}
+
+const AUTOPLAY_MS = 4000;
+let autoTimer = null;
+
+function startAutoplay() {
+  stopAutoplay();
+  autoTimer = setInterval(() => goTo(current + 1), AUTOPLAY_MS);
+}
+function stopAutoplay() { clearInterval(autoTimer); autoTimer = null; }
+
+function goTo(idx) {
+  document.querySelectorAll('.slide')[current]?.classList.remove('active');
+  current = ((idx % slides.length) + slides.length) % slides.length;
+  document.querySelectorAll('.slide')[current]?.classList.add('active');
+  syncEdit();
+}
+
+function syncEdit() {
+  document.getElementById('editSlideNum').textContent = `Slide ${current + 1} of ${slides.length}`;
+  document.getElementById('editInput').value = slides[current] || '';
+}
+
+function toggleEdit() {
+  editOpen = !editOpen;
+  document.getElementById('editPanel').classList.toggle('visible', editOpen);
+  document.getElementById('menuLabel').textContent = editOpen ? 'Done' : 'Edit slides';
+  if (editOpen) { stopAutoplay(); syncEdit(); }
+  else startAutoplay();
+}
+
+function updateCurrentText() {
+  const val = document.getElementById('editInput').value;
+  slides[current] = val;
+  const el = document.querySelectorAll('.slide')[current];
+  if (el) el.querySelector('.slide-text').innerHTML = esc(val);
+  save();
+}
+
+function addSlide() {
+  slides.splice(current + 1, 0, '');
+  current++;
+  render();
+  document.getElementById('editInput').focus();
+}
+
+function deleteSlide() {
+  if (slides.length <= 1) return;
+  slides.splice(current, 1);
+  if (current >= slides.length) current = slides.length - 1;
+  render(); save();
+}
+
+document.getElementById('btnPrev').onclick = () => goTo(current - 1);
+document.getElementById('btnNext').onclick = () => goTo(current + 1);
+
+load(); applyTheme(); render(); updateThemeIcon(); startAutoplay();
+</script>
+</body>
+</html>
