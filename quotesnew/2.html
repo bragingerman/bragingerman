@@ -294,10 +294,9 @@ function updateThemeIcon() {
 }
 
 function toggleTheme() {
-  const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  if (themeOverride === null) themeOverride = sysDark ? 'light' : 'dark';
-  else if (themeOverride === 'light') themeOverride = 'dark';
-  else themeOverride = null;
+  const currentlyDark = themeOverride === 'dark' ||
+    (themeOverride === null && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  themeOverride = currentlyDark ? 'light' : 'dark';
   applyTheme(); updateThemeIcon(); save();
 }
 
@@ -347,7 +346,7 @@ function syncEdit() {
 function toggleEdit() {
   editOpen = !editOpen;
   document.getElementById('editPanel').classList.toggle('visible', editOpen);
-  document.getElementById('menuLabel').textContent = editOpen ? 'Done' : 'Edit slides';
+  document.getElementById('menuLabel').textContent = editOpen ? 'Done' : 'Edit';
   if (editOpen) { stopAutoplay(); syncEdit(); }
   else startAutoplay();
 }
