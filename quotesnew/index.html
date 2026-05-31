@@ -4,88 +4,141 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Affirmation Slider</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg: #f0f0f0;
-  --controls-bg: #e8e8e8;
-  --pill-bg: #d8d8d8;
-  --pill-hover: #ccc;
-  --pill-text: #555;
-  --edit-bg: rgba(255,255,255,0.95);
-  --edit-border: rgba(0,0,0,0.1);
-  --edit-text: #333;
+  --bg: #ffffff;
+  --pill-bg: rgba(0,0,0,0.12);
+  --pill-hover: rgba(0,0,0,0.2);
+  --pill-text: #333;
+  --overlay-bg: rgba(255,255,255,0.7);
+  --overlay-border: rgba(0,0,0,0.08);
+  --edit-text: #222;
   --edit-muted: #999;
+  --edit-btn-border: rgba(0,0,0,0.15);
 }
 
-/* System dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #222222;
-    --controls-bg: #2e2e2e;
-    --pill-bg: #3a3a3a;
-    --pill-hover: #444;
-    --pill-text: #aaa;
-    --edit-bg: rgba(40,40,40,0.98);
-    --edit-border: rgba(255,255,255,0.1);
-    --edit-text: #ddd;
+    --bg: #191919;
+    --pill-bg: rgba(255,255,255,0.12);
+    --pill-hover: rgba(255,255,255,0.2);
+    --pill-text: #ccc;
+    --overlay-bg: rgba(25,25,25,0.75);
+    --overlay-border: rgba(255,255,255,0.08);
+    --edit-text: #e8e8e8;
     --edit-muted: #666;
+    --edit-btn-border: rgba(255,255,255,0.15);
   }
 }
 
-/* Manual override — force light */
 [data-theme="light"] {
-  --bg: #f0f0f0;
-  --controls-bg: #e8e8e8;
-  --pill-bg: #d8d8d8;
-  --pill-hover: #ccc;
-  --pill-text: #555;
-  --edit-bg: rgba(255,255,255,0.95);
-  --edit-border: rgba(0,0,0,0.1);
-  --edit-text: #333;
+  --bg: #ffffff;
+  --pill-bg: rgba(0,0,0,0.12);
+  --pill-hover: rgba(0,0,0,0.2);
+  --pill-text: #333;
+  --overlay-bg: rgba(255,255,255,0.7);
+  --overlay-border: rgba(0,0,0,0.08);
+  --edit-text: #222;
   --edit-muted: #999;
+  --edit-btn-border: rgba(0,0,0,0.15);
 }
 
-/* Manual override — force dark */
 [data-theme="dark"] {
-  --bg: #222222;
-  --controls-bg: #2e2e2e;
-  --pill-bg: #3a3a3a;
-  --pill-hover: #444;
-  --pill-text: #aaa;
-  --edit-bg: rgba(40,40,40,0.98);
-  --edit-border: rgba(255,255,255,0.1);
-  --edit-text: #ddd;
+  --bg: #191919;
+  --pill-bg: rgba(255,255,255,0.12);
+  --pill-hover: rgba(255,255,255,0.2);
+  --pill-text: #ccc;
+  --overlay-bg: rgba(25,25,25,0.75);
+  --overlay-border: rgba(255,255,255,0.08);
+  --edit-text: #e8e8e8;
   --edit-muted: #666;
+  --edit-btn-border: rgba(255,255,255,0.15);
 }
 
 html, body {
   width: 100%; height: 100%;
   background: var(--bg);
   transition: background 0.3s;
-  font-family: -apple-system, sans-serif;
 }
 
-.wrapper {
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.auth-screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.auth-box {
+  width: min(100%, 360px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100vh;
-  padding: 16px 16px 12px;
-  gap: 10px;
+  gap: 14px;
+  color: var(--edit-text);
+  text-align: center;
 }
 
-/* SLIDE CARD */
+.auth-title {
+  font-family: "Lora", Georgia, serif;
+  font-size: 26px;
+  font-weight: 500;
+}
+
+.auth-note {
+  color: var(--edit-muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.auth-btn {
+  width: 100%;
+  height: 42px;
+  border: 1px solid var(--edit-btn-border);
+  border-radius: 999px;
+  background: var(--pill-bg);
+  color: var(--edit-text);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+.auth-btn:hover { background: var(--pill-hover); }
+
+.wrapper {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 16px;
+}
+
+.wrapper.visible { display: flex; }
+.auth-screen.hidden { display: none; }
+
 .slide-card {
   width: 100%;
   max-width: 460px;
   aspect-ratio: 1 / 1;
-  border-radius: 22px;
+  border-radius: 9%;
   position: relative;
   overflow: hidden;
   flex-shrink: 0;
+}
+
+.slide-bg-img {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
 }
 
 .slide {
@@ -98,48 +151,33 @@ html, body {
   opacity: 0;
   transition: opacity 0.5s ease;
   pointer-events: none;
+  z-index: 1;
 }
 .slide.active { opacity: 1; pointer-events: auto; }
 
-.slide-bg {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 58% 52% at 50% 48%, rgba(255,238,215,0.9) 0%, transparent 68%),
-    linear-gradient(145deg, #e9a8bc 0%, #d585a0 35%, #c97aa8 55%, #d68aaa 80%, #ecbac6 100%);
-}
-.slide-bg::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse 75% 65% at 50% 44%, rgba(255,215,195,0.35) 0%, transparent 62%);
-}
-
 .slide-text {
-  position: relative;
-  z-index: 1;
   color: #fff;
   text-align: center;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: "Lora", Georgia, serif;
   font-size: clamp(16px, 5vw, 26px);
-  font-weight: 700;
-  line-height: 1.38;
-  letter-spacing: 0.025em;
-  text-shadow: 0 1px 4px rgba(150,50,80,0.2), 0 0 28px rgba(255,255,255,0.12);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.25), 0 0 32px rgba(0,0,0,0.1);
 }
 
-/* BOTTOM CONTROLS — pill bar */
 .controls {
-  width: 100%;
-  max-width: 460px;
-  background: var(--controls-bg);
-  border-radius: 18px;
-  padding: 10px 14px;
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  z-index: 10;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 8px;
-  transition: background 0.3s;
+  background: transparent;
+  border: none;
+  padding: 8px 10px;
 }
 
 .pill {
@@ -153,45 +191,45 @@ html, body {
   color: var(--pill-text);
   cursor: pointer;
   transition: background 0.15s;
-  font-family: -apple-system, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 .pill:hover { background: var(--pill-hover); }
 
 .pill-arrow {
-  width: 72px;
-  height: 34px;
+  width: 64px;
+  height: 30px;
   font-size: 18px;
-  font-weight: 400;
 }
 .pill-center {
   flex: 1;
-  height: 34px;
-  font-size: 13px;
+  height: 30px;
+  font-size: 12px;
   font-weight: 500;
-  gap: 6px;
+  gap: 5px;
 }
-.pill-theme {
-  width: 34px;
-  height: 34px;
-  font-size: 15px;
+.pill-theme,
+.pill-logout {
+  width: 30px;
+  height: 30px;
+  font-size: 14px;
   flex-shrink: 0;
 }
-.pill-icon {
-  font-size: 14px;
-  line-height: 1;
-}
 
-/* EDIT PANEL */
 .edit-panel {
-  width: 100%;
-  max-width: 460px;
-  background: var(--edit-bg);
-  border: 1px solid var(--edit-border);
-  border-radius: 16px;
-  padding: 12px;
+  position: absolute;
+  bottom: 64px;
+  left: 12px;
+  right: 12px;
+  z-index: 9;
+  background: var(--overlay-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--overlay-border);
+  border-radius: 18px;
+  padding: 14px;
   display: none;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 .edit-panel.visible { display: flex; }
 
@@ -199,25 +237,23 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
 }
 .edit-label {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--edit-muted);
 }
-.edit-actions {
-  display: flex;
-  gap: 6px;
-}
+.edit-actions { display: flex; gap: 6px; }
 .edit-btn {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 11px;
   font-weight: 500;
   color: var(--edit-muted);
   background: none;
-  border: 1px solid var(--edit-border);
+  border: 1px solid var(--edit-btn-border);
   border-radius: 7px;
   padding: 3px 9px;
   cursor: pointer;
@@ -228,127 +264,266 @@ html, body {
 
 textarea.edit-input {
   width: 100%;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: "Lora", Georgia, serif;
   font-size: 14px;
+  font-weight: 500;
   line-height: 1.5;
   color: var(--edit-text);
   background: transparent;
   border: none;
   resize: none;
   outline: none;
-  min-height: 64px;
+  min-height: 60px;
 }
 textarea.edit-input::placeholder { color: var(--edit-muted); }
 </style>
 </head>
 <body>
 
-<div class="wrapper">
-  <div class="slide-card" id="slideCard"></div>
-
-  <div class="controls">
-    <button class="pill pill-arrow" id="btnPrev" aria-label="Previous">&#8249;</button>
-    <button class="pill pill-center" id="btnMenu" onclick="toggleEdit()">
-      <span class="pill-icon">◷</span>
-      <span id="menuLabel">Edit slides</span>
-    </button>
-    <button class="pill pill-theme" onclick="toggleTheme()" aria-label="Toggle theme" id="btnTheme">☀</button>
-    <button class="pill pill-arrow" id="btnNext" aria-label="Next">&#8250;</button>
+<div class="auth-screen" id="authScreen">
+  <div class="auth-box">
+    <div class="auth-title">Affirmation Slider</div>
+    <div class="auth-note" id="authNote">Войдите, чтобы синхронизировать слайды между устройствами.</div>
+    <button class="auth-btn" id="btnGoogle" onclick="signInWithGoogle()">Войти через Google</button>
   </div>
+</div>
 
-  <div class="edit-panel" id="editPanel">
-    <div class="edit-top">
-      <span class="edit-label" id="editSlideNum">Slide 1</span>
-      <div class="edit-actions">
-        <button class="edit-btn" onclick="addSlide()">+ Add</button>
-        <button class="edit-btn danger" onclick="deleteSlide()">Delete</button>
+<div class="wrapper" id="app">
+  <div class="slide-card" id="slideCard">
+    <div class="slide-bg-img" id="slideBg"></div>
+
+    <div class="edit-panel" id="editPanel">
+      <div class="edit-top">
+        <span class="edit-label" id="editSlideNum">Slide 1</span>
+        <div class="edit-actions">
+          <button class="edit-btn" onclick="addSlide()">+ Add</button>
+          <button class="edit-btn danger" onclick="deleteSlide()">Delete</button>
+        </div>
       </div>
+      <textarea class="edit-input" id="editInput" placeholder="Type your affirmation..." rows="3"
+        oninput="updateCurrentText()"></textarea>
     </div>
-    <textarea class="edit-input" id="editInput" placeholder="Type your affirmation…" rows="3"
-      oninput="updateCurrentText()"></textarea>
+
+    <div class="controls">
+      <button class="pill pill-arrow" id="btnPrev" aria-label="Previous">&#8249;</button>
+      <button class="pill pill-center" id="btnMenu" onclick="toggleEdit()">
+        <span>&#9671;</span>
+        <span id="menuLabel">Edit</span>
+      </button>
+      <button class="pill pill-theme" onclick="toggleTheme()" id="btnTheme" aria-label="Toggle theme">&#9788;</button>
+      <button class="pill pill-logout" onclick="signOut()" aria-label="Sign out">×</button>
+      <button class="pill pill-arrow" id="btnNext" aria-label="Next">&#8250;</button>
+    </div>
   </div>
 </div>
 
 <script>
-const KEY = 'notion_slider_v2';
-let slides = [], current = 0, editOpen = false;
-// null = follow system, 'light' or 'dark' = manual override
-let themeOverride = null;
+const SUPABASE_URL = 'https://ozkcvbhlqsctztffsjgc.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_wPuj8oXD73B3Kfc1t75R0A_B5rTjpIq';
 
-function load() {
-  try {
-    const d = JSON.parse(localStorage.getItem(KEY));
-    if (d) {
-      slides = d.slides;
-      themeOverride = d.themeOverride ?? null;
-    }
-  } catch(e) {}
-  if (!slides || !slides.length) {
-    slides = [
-      'I care about my health, not just the number on the scale',
-      'I am enough, exactly as I am',
-      'Every day I grow stronger'
-    ];
+const DEFAULT_SLIDES = [
+  'I care about my health, not just the number on the scale',
+  'I am enough, exactly as I am',
+  'Every day I grow stronger'
+];
+const BG_IMAGES = ['bg.png', 'bg2.png'];
+const AUTOPLAY_MS = 4000;
+
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true
+  }
+});
+
+let user = null;
+let slides = [];
+let current = 0;
+let editOpen = false;
+let themeOverride = null;
+let autoTimer = null;
+let realtimeChannel = null;
+let isApplyingRemote = false;
+let savePromise = Promise.resolve();
+
+function getRedirectUrl() {
+  return window.location.origin + window.location.pathname;
+}
+
+async function signInWithGoogle() {
+  const { error } = await supabaseClient.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: getRedirectUrl() }
+  });
+  if (error) {
+    console.error(error);
+    document.getElementById('authNote').textContent = 'Не удалось начать вход через Google.';
   }
 }
 
-function save() {
-  try { localStorage.setItem(KEY, JSON.stringify({ slides, themeOverride })); } catch(e) {}
+async function signOut() {
+  stopAutoplay();
+  if (realtimeChannel) {
+    await supabaseClient.removeChannel(realtimeChannel);
+    realtimeChannel = null;
+  }
+  await supabaseClient.auth.signOut();
+  user = null;
+  showAuth();
+}
+
+function showAuth() {
+  document.getElementById('authScreen').classList.remove('hidden');
+  document.getElementById('app').classList.remove('visible');
+}
+
+function showApp() {
+  document.getElementById('authScreen').classList.add('hidden');
+  document.getElementById('app').classList.add('visible');
+}
+
+async function loadUserSlides() {
+  const { data, error } = await supabaseClient
+    .from('user_slides')
+    .select('slides, theme_override, updated_at')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (error) throw error;
+
+  if (!data) {
+    slides = [...DEFAULT_SLIDES];
+    themeOverride = null;
+    await save();
+    return;
+  }
+
+  slides = Array.isArray(data.slides) && data.slides.length ? data.slides : [...DEFAULT_SLIDES];
+  themeOverride = normalizeTheme(data.theme_override);
+}
+
+function subscribeToChanges() {
+  if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
+
+  realtimeChannel = supabaseClient
+    .channel(`user-slides-${user.id}`)
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'user_slides',
+        filter: `user_id=eq.${user.id}`
+      },
+      (payload) => {
+        if (!payload.new) return;
+        applyRemoteState(payload.new);
+      }
+    )
+    .subscribe((status, err) => {
+      if (err) console.error(err);
+      if (status === 'CHANNEL_ERROR') console.error('Realtime channel error');
+    });
+}
+
+function applyRemoteState(row) {
+  const nextSlides = Array.isArray(row.slides) && row.slides.length ? row.slides : [...DEFAULT_SLIDES];
+  const nextTheme = normalizeTheme(row.theme_override);
+  if (sameSlides(slides, nextSlides) && themeOverride === nextTheme) return;
+
+  isApplyingRemote = true;
+  slides = nextSlides;
+  themeOverride = nextTheme;
+  if (current >= slides.length) current = slides.length - 1;
+  applyTheme();
+  render();
+  updateThemeIcon();
+  isApplyingRemote = false;
+}
+
+function normalizeTheme(value) {
+  return value === 'dark' || value === 'light' ? value : null;
+}
+
+function sameSlides(a, b) {
+  return a.length === b.length && a.every((item, index) => item === b[index]);
+}
+
+async function save() {
+  if (!user || isApplyingRemote) return;
+
+  const payload = {
+    user_id: user.id,
+    slides: [...slides],
+    theme_override: themeOverride,
+    updated_at: new Date().toISOString()
+  };
+
+  savePromise = savePromise.then(async () => {
+    try {
+      const { error } = await supabaseClient
+        .from('user_slides')
+        .upsert(payload, { onConflict: 'user_id' });
+      if (error) console.error(error);
+    } catch (error) {
+      console.error(error);
+    }
+  });
+
+  return savePromise;
 }
 
 function applyTheme() {
-  if (themeOverride) {
-    document.documentElement.setAttribute('data-theme', themeOverride);
-  } else {
-    document.documentElement.removeAttribute('data-theme');
-  }
+  if (themeOverride) document.documentElement.setAttribute('data-theme', themeOverride);
+  else document.documentElement.removeAttribute('data-theme');
 }
 
 function updateThemeIcon() {
-  const btn = document.getElementById('btnTheme');
-  if (!btn) return;
-  const effectiveDark = themeOverride === 'dark' ||
+  const dark = themeOverride === 'dark' ||
     (themeOverride === null && window.matchMedia('(prefers-color-scheme: dark)').matches);
-  btn.textContent = effectiveDark ? '☾' : '☀';
+  document.getElementById('btnTheme').textContent = dark ? '☾' : '☀';
 }
 
 function toggleTheme() {
-  const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  if (themeOverride === null) {
-    themeOverride = systemDark ? 'light' : 'dark';
-  } else if (themeOverride === 'light') {
-    themeOverride = 'dark';
-  } else {
-    themeOverride = null;
-  }
+  const currentlyDark = themeOverride === 'dark' ||
+    (themeOverride === null && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  themeOverride = currentlyDark ? 'light' : 'dark';
   applyTheme();
   updateThemeIcon();
   save();
 }
 
-// Follow system changes if no manual override
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-  if (themeOverride === null) { applyTheme(); updateThemeIcon(); }
+  if (!themeOverride) {
+    applyTheme();
+    updateThemeIcon();
+  }
 });
 
 function esc(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\n/g, '<br>');
 }
 
 function render() {
   const card = document.getElementById('slideCard');
-  card.innerHTML = '';
+  card.querySelectorAll('.slide').forEach(s => s.remove());
+  const editPanel = document.getElementById('editPanel');
+
   slides.forEach((text, i) => {
     const s = document.createElement('div');
     s.className = 'slide' + (i === current ? ' active' : '');
-    s.innerHTML = `<div class="slide-bg"></div><div class="slide-text">${esc(text)}</div>`;
-    card.appendChild(s);
+    s.innerHTML = `<div class="slide-text">${esc(text)}</div>`;
+    card.insertBefore(s, editPanel);
   });
+
+  updateBg();
   syncEdit();
 }
-
-const AUTOPLAY_MS = 4000;
-let autoTimer = null;
 
 function startAutoplay() {
   stopAutoplay();
@@ -360,11 +535,17 @@ function stopAutoplay() {
   autoTimer = null;
 }
 
+function updateBg() {
+  document.getElementById('slideBg').style.backgroundImage =
+    `url('${BG_IMAGES[current % BG_IMAGES.length]}')`;
+}
+
 function goTo(idx) {
-  const els = document.querySelectorAll('.slide');
-  els[current]?.classList.remove('active');
+  if (!slides.length) return;
+  document.querySelectorAll('.slide')[current]?.classList.remove('active');
   current = ((idx % slides.length) + slides.length) % slides.length;
-  els[current]?.classList.add('active');
+  document.querySelectorAll('.slide')[current]?.classList.add('active');
+  updateBg();
   syncEdit();
 }
 
@@ -376,9 +557,13 @@ function syncEdit() {
 function toggleEdit() {
   editOpen = !editOpen;
   document.getElementById('editPanel').classList.toggle('visible', editOpen);
-  document.getElementById('menuLabel').textContent = editOpen ? 'Done' : 'Edit slides';
-  if (editOpen) { stopAutoplay(); syncEdit(); }
-  else startAutoplay();
+  document.getElementById('menuLabel').textContent = editOpen ? 'Done' : 'Edit';
+  if (editOpen) {
+    stopAutoplay();
+    syncEdit();
+  } else {
+    startAutoplay();
+  }
 }
 
 function updateCurrentText() {
@@ -391,9 +576,9 @@ function updateCurrentText() {
 
 function addSlide() {
   slides.splice(current + 1, 0, '');
-  current = current + 1;
+  current++;
   render();
-  // focus textarea so user can type immediately
+  save();
   document.getElementById('editInput').focus();
 }
 
@@ -405,14 +590,53 @@ function deleteSlide() {
   save();
 }
 
+async function initApp() {
+  if (SUPABASE_URL.includes('YOUR_PROJECT_REF') || SUPABASE_ANON_KEY.includes('YOUR_SUPABASE_ANON_KEY')) {
+    document.getElementById('authNote').textContent =
+      'Укажите SUPABASE_URL и SUPABASE_ANON_KEY в HTML-файле.';
+    showAuth();
+    return;
+  }
+
+  const { data, error } = await supabaseClient.auth.getUser();
+  if (error || !data.user) {
+    showAuth();
+    return;
+  }
+
+  user = data.user;
+  await loadUserSlides();
+  showApp();
+  applyTheme();
+  render();
+  updateThemeIcon();
+  subscribeToChanges();
+  startAutoplay();
+}
+
 document.getElementById('btnPrev').onclick = () => goTo(current - 1);
 document.getElementById('btnNext').onclick = () => goTo(current + 1);
 
-load();
-applyTheme();
-render();
-updateThemeIcon();
-startAutoplay();
+supabaseClient.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN' && session?.user && (!user || user.id !== session.user.id)) {
+    user = session.user;
+    setTimeout(() => initApp().catch(console.error), 0);
+  }
+});
+
+window.signInWithGoogle = signInWithGoogle;
+window.signOut = signOut;
+window.toggleTheme = toggleTheme;
+window.toggleEdit = toggleEdit;
+window.updateCurrentText = updateCurrentText;
+window.addSlide = addSlide;
+window.deleteSlide = deleteSlide;
+
+initApp().catch((error) => {
+  console.error(error);
+  document.getElementById('authNote').textContent = 'Не удалось загрузить данные.';
+  showAuth();
+});
 </script>
 </body>
 </html>
