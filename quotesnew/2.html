@@ -83,11 +83,13 @@ html, body {
   flex-shrink: 0;
 }
 
-/* bg.png покрывает весь слайд */
+/* фон слайда — меняется через JS */
 .slide-bg-img {
   position: absolute;
   inset: 0;
-  background: url('bg.png') center center / cover no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   z-index: 0;
 }
 
@@ -233,7 +235,7 @@ textarea.edit-input::placeholder { color: var(--edit-muted); }
 
 <div class="wrapper">
   <div class="slide-card" id="slideCard">
-    <div class="slide-bg-img"></div>
+    <div class="slide-bg-img" id="slideBg"></div>
     <!-- slides injected here -->
 
     <div class="edit-panel" id="editPanel">
@@ -319,6 +321,7 @@ function render() {
     s.innerHTML = `<div class="slide-text">${esc(text)}</div>`;
     card.insertBefore(s, editPanel);
   });
+  updateBg();
   syncEdit();
 }
 
@@ -331,10 +334,18 @@ function startAutoplay() {
 }
 function stopAutoplay() { clearInterval(autoTimer); autoTimer = null; }
 
+const BG_IMAGES = ['bg.png', 'bg2.png'];
+
+function updateBg() {
+  document.getElementById('slideBg').style.backgroundImage =
+    `url('${BG_IMAGES[current % BG_IMAGES.length]}')`;
+}
+
 function goTo(idx) {
   document.querySelectorAll('.slide')[current]?.classList.remove('active');
   current = ((idx % slides.length) + slides.length) % slides.length;
   document.querySelectorAll('.slide')[current]?.classList.add('active');
+  updateBg();
   syncEdit();
 }
 
