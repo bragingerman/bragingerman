@@ -40,38 +40,46 @@
 
 <script>
 const KEY = 'notion_slider_v3';
+const SLIDES_VERSION = 1; // ++ чтобы сбросить слайды у всех
 let slides = [], current = 0, editOpen = false, themeOverride = null;
+
+const DEFAULT_SLIDES = [
+  'I EAT WHEN I\'M PHYSICALLY HUNGRY',
+  'NO OVEREATING',
+  'I EAT WITHOUT WORRYING ABOUT WHAT I EAT',
+  'I EAT WITH PLEASURE',
+  'I EAT ENOUGH PROTEIN',
+  'I EAT ENOUGH FIBER',
+  'MAINTAIN STABLE ENERGY AND BLOOD SUGAR LEVELS',
+  'I\'M REPLENISHING MY WATER BALANCE',
+  'I REPLENISH MACRO AND MICRONUTRIENT DEFICIENCIES',
+  'I SUPPORT THE HEALTH OF THE GASTROINTESTINAL TRACT AND MICROBIOME',
+  'MAINTAINING MUSCLE MASS',
+  'I CARE ABOUT THE QUALITY OF SLEEP AND RECOVERY',
+  'I REDUCE THE LEVEL OF CHRONIC STRESS',
+  'I CHOOSE SUSTAINABLE HABITS OVER EXTREMES',
+  'I CARE ABOUT MY HEALTH, NOT JUST THE NUMBER ON THE SCALE',
+  'I TREAT MY BODY WITH RESPECT',
+  'THE 80/20 DIET RULE'
+];
 
 function load() {
   try {
     const d = JSON.parse(localStorage.getItem(KEY));
-    if (d) { slides = d.slides; themeOverride = d.themeOverride ?? null; }
+    if (d) {
+      themeOverride = d.themeOverride ?? null;
+      if (d.version === SLIDES_VERSION) {
+        slides = d.slides;
+      } else {
+        slides = [...DEFAULT_SLIDES];
+      }
+    }
   } catch(e) {}
-  if (!slides || !slides.length) {
-    slides = [
-      'I EAT WHEN I\'M PHYSICALLY HUNGRY',
-      'NO OVEREATING',
-      'I EAT WITHOUT WORRYING ABOUT WHAT I EAT',
-      'I EAT WITH PLEASURE',
-      'I EAT ENOUGH PROTEIN',
-      'I EAT ENOUGH FIBER',
-      'MAINTAIN STABLE ENERGY AND BLOOD SUGAR LEVELS',
-      'I\'M REPLENISHING MY WATER BALANCE',
-      'I REPLENISH MACRO AND MICRONUTRIENT DEFICIENCIES',
-      'I SUPPORT THE HEALTH OF THE GASTROINTESTINAL TRACT AND MICROBIOME',
-      'MAINTAINING MUSCLE MASS',
-      'I CARE ABOUT THE QUALITY OF SLEEP AND RECOVERY',
-      'I REDUCE THE LEVEL OF CHRONIC STRESS',
-      'I CHOOSE SUSTAINABLE HABITS OVER EXTREMES',
-      'I CARE ABOUT MY HEALTH, NOT JUST THE NUMBER ON THE SCALE',
-      'I TREAT MY BODY WITH RESPECT',
-      'THE 80/20 DIET RULE'
-    ];
-  }
+  if (!slides || !slides.length) slides = [...DEFAULT_SLIDES];
 }
 
 function save() {
-  try { localStorage.setItem(KEY, JSON.stringify({ slides, themeOverride })); } catch(e) {}
+  try { localStorage.setItem(KEY, JSON.stringify({ slides, themeOverride, version: SLIDES_VERSION })); } catch(e) {}
 }
 
 function applyTheme() {
