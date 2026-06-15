@@ -101,8 +101,8 @@ let dH1, dH2, dM1, dM2, dS1, dS2, secGroup, secColon;
 function pad(n){ return String(n).padStart(2,'0'); }
 
 function setSecondsVisible(show) {
-  secGroup.style.display = show ? 'flex' : 'none';
-  secColon.style.display = show ? 'flex' : 'none';
+  if (secGroup) secGroup.style.display = show ? 'flex' : 'none';
+  if (secColon) secColon.style.display = show ? 'flex' : 'none';
 }
 
 function updateDisplay(hh, mm, ss) {
@@ -212,6 +212,8 @@ function startClock() {
 // INIT
 // =============================================
 function init() {
+  console.log('Init started, readyState:', document.readyState);
+
   dH1 = document.getElementById('d-h1');
   dH2 = document.getElementById('d-h2');
   dM1 = document.getElementById('d-m1');
@@ -221,15 +223,21 @@ function init() {
   secGroup = document.getElementById('fu-secs');
   secColon = document.querySelector('#clockRow .colon:last-of-type');
 
+  console.log('Elements:', {dH1, dH2, dM1, dM2, dS1, dS2, secGroup, secColon});
+
   [dH1,dH2,dM1,dM2,dS1,dS2].forEach(buildDigit);
 
   buildThemePicker();
   applyTheme(currentTheme);
   setSecondsVisible(false);
+
+  console.log('About to start clock...');
   startClock();
+  console.log('Clock started');
 }
 
 // Run when DOM is ready
+console.log('Script loaded, readyState:', document.readyState);
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
 } else {
