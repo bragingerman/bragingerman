@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff9fc8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f077b0;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="64" height="64" fill="#f69fdc" rx="12"/>
+
+  <!-- Flip card -->
+  <rect x="12" y="10" width="40" height="44" fill="url(#grad)" rx="6"/>
+
+  <!-- Middle divider line -->
+  <line x1="12" y1="32" x2="52" y2="32" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+
+  <!-- Number -->
+  <text x="32" y="42" font-family="Arial, sans-serif" font-size="32" font-weight="700" fill="#fff" text-anchor="middle" style="letter-spacing: -2px;">8</text>
+</svg>
