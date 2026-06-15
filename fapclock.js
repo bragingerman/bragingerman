@@ -3,7 +3,7 @@
 // =============================================
 const THEMES = [
   { bg:'#fff', card:'#ff88be', top:'#ff9fc8', bottom:'#f077b0', color:'#fff', labelColor:'#333', shadow:'rgba(200,80,140,0.3)', name:'Pink' },
-  { bg:'#222', card:'#333', top:'#3a3a3a', bottom:'#222', color:'#fff', labelColor:'#fff', shadow:'rgba(0,0,0,0.5)', name:'Dark' },
+  { bg:'#191919', card:'#333', top:'#3a3a3a', bottom:'#222', color:'#fff', labelColor:'#fff', shadow:'rgba(0,0,0,0.5)', name:'Dark' },
   { bg:'#fff', card:'#f0f0f0', top:'#f8f8f8', bottom:'#e0e0e0', color:'#333', labelColor:'#333', shadow:'rgba(0,0,0,0.15)', name:'White' },
 ];
 
