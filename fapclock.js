@@ -169,6 +169,13 @@ function startClock() {
 function init() {
   console.log('Init started, readyState:', document.readyState);
 
+  // Hide fullscreen on iOS/iPadOS
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (isIOS) {
+    const fsBtn = document.querySelector('button[onclick="goFullscreen()"]');
+    if (fsBtn) fsBtn.style.display = 'none';
+  }
+
   dH1 = document.getElementById('d-h1');
   dH2 = document.getElementById('d-h2');
   dM1 = document.getElementById('d-m1');

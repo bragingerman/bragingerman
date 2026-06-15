@@ -300,15 +300,19 @@ body {
 }
 
 @media (max-width: 480px) {
+    .clock-wrap {
+        gap: 20px;
+    }
+
     .flip-digit {
-        width: 68px;
-        height: 115px;
+        width: 58px;
+        height: 100px;
     }
 
     .flip-digit .static-top span,
     .flip-digit .static-bottom span,
     .flip-digit .flap span {
-        font-size: 84px;
+        font-size: 72px;
         font-weight: 600;
     }
 
@@ -322,6 +326,10 @@ body {
 
     .flip-digit .flap span {
         transform: translateY(50%) scaleY(1.4);
+    }
+
+    .clock-labels {
+        max-width: 320px;
     }
 }
 
@@ -339,8 +347,8 @@ body {
     }
 
     .flip-digit {
-        width: 48px;
-        height: 80px;
+        width: 42px;
+        height: 70px;
         border-radius: 8px;
         box-shadow: 0 4px 16px var(--shadow), 0 1px 0 var(--divider);
     }
@@ -348,7 +356,7 @@ body {
     .flip-digit .static-top span,
     .flip-digit .static-bottom span,
     .flip-digit .flap span {
-        font-size: 60px;
+        font-size: 52px;
         font-weight: 600;
         letter-spacing: -1px;
     }
