@@ -314,7 +314,6 @@
     .flip-digit .static-top span,
     .flip-digit .static-bottom span,
     .flip-digit .flap span { font-size: 64px; }
-    .unit-label { width: 68px; }
   }
 </style>
 </head>
@@ -335,7 +334,7 @@
       <div class="flip-digit" id="d-m1"></div>
       <div class="flip-digit" id="d-m2"></div>
     </div>
-    <div class="colon"><div class="colon-dot"></div><div class="colon-dot"></div></div>
+    <!-- <div class="colon"><div class="colon-dot"></div><div class="colon-dot"></div></div> -->
     <!-- Seconds -->
     <div class="flip-unit-wrap" id="fu-secs">
       <div class="flip-digit" id="d-s1"></div>
@@ -389,18 +388,12 @@
 // THEMES
 // =============================================
 const THEMES = [
-  { bg:'#1a1a2e', card:'#16213e', top:'#1e2a52', bottom:'#111827', color:'#e0c3fc', shadow:'rgba(90,50,180,0.4)', name:'Night' },
   { bg:'#f69fdc', card:'#ff88be', top:'#ff9fc8', bottom:'#f077b0', color:'#fff', shadow:'rgba(200,80,140,0.3)', name:'Pink' },
-  { bg:'#b8e4f9', card:'#7ecef4', top:'#94d9f7', bottom:'#5ec2ef', color:'#fff', shadow:'rgba(60,130,200,0.3)', name:'Blue' },
-  { bg:'#d4f1c4', card:'#8ed97a', top:'#a2e28f', bottom:'#72cc64', color:'#fff', shadow:'rgba(60,160,80,0.3)', name:'Green' },
-  { bg:'#fff3cd', card:'#ffd966', top:'#ffe080', bottom:'#f5c842', color:'#7a5700', shadow:'rgba(180,130,0,0.25)', name:'Yellow' },
-  { bg:'#ffe5d9', card:'#ffb3a3', top:'#ffc4b5', bottom:'#ff9580', color:'#fff', shadow:'rgba(220,80,50,0.3)', name:'Peach' },
-  { bg:'#e8d5f5', card:'#c49ed9', top:'#d1b0e8', bottom:'#b580cf', color:'#fff', shadow:'rgba(140,70,200,0.3)', name:'Lilac' },
   { bg:'#222', card:'#333', top:'#3a3a3a', bottom:'#222', color:'#fff', shadow:'rgba(0,0,0,0.5)', name:'Dark' },
   { bg:'#fff', card:'#f0f0f0', top:'#f8f8f8', bottom:'#e0e0e0', color:'#333', shadow:'rgba(0,0,0,0.15)', name:'White' },
 ];
 
-let currentTheme = 1;
+let currentTheme = 0;
 
 function applyTheme(idx) {
   const t = THEMES[idx];
