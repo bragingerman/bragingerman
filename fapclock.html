@@ -23,20 +23,11 @@
       <div class="flip-digit" id="d-m1"></div>
       <div class="flip-digit" id="d-m2"></div>
     </div>
-    <div class="colon"><div class="colon-dot"></div><div class="colon-dot"></div></div>
-    <!-- Seconds -->
-    <div class="flip-unit-wrap" id="fu-secs">
-      <div class="flip-digit" id="d-s1"></div>
-      <div class="flip-digit" id="d-s2"></div>
-    </div>
   </div>
-
-  <div class="cd-status" id="cdStatus"></div>
 
   <!-- CONTROLS -->
   <div class="controls">
     <button class="ctrl-btn" id="btn24" onclick="toggle24()">24h</button>
-    <button class="ctrl-btn" id="btnCD" onclick="openCountdown()">⏱ Timer</button>
     <button class="ctrl-btn" onclick="goFullscreen()">⛶ Fullscreen</button>
 
     <!-- THEME PICKER -->
@@ -44,33 +35,6 @@
   </div>
 </div>
 
-<!-- COUNTDOWN PANEL -->
-<div class="countdown-panel" id="cdPanel">
-  <div class="countdown-dialog">
-    <h3>⏱ Countdown</h3>
-    <div class="cd-inputs">
-      <div class="cd-field">
-        <label>Hours</label>
-        <input type="number" id="cdH" min="0" max="99" value="0">
-      </div>
-      <div class="cd-colon">:</div>
-      <div class="cd-field">
-        <label>Min</label>
-        <input type="number" id="cdM" min="0" max="59" value="5">
-      </div>
-      <div class="cd-colon">:</div>
-      <div class="cd-field">
-        <label>Sec</label>
-        <input type="number" id="cdS" min="0" max="59" value="0">
-      </div>
-    </div>
-    <div class="cd-btn-row">
-      <button class="cd-btn start" onclick="startCountdown()">▶ Start</button>
-      <button class="cd-btn" onclick="stopCountdown()">■ Stop</button>
-      <button class="cd-btn" onclick="closeCountdown()">Cancel</button>
-    </div>
-  </div>
-</div>
 <script src="fapclock.js"></script>
 </body>
 </html>

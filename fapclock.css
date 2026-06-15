@@ -58,11 +58,6 @@ body {
     gap: 12px;
 }
 
-#fu-secs,
-#clockRow .colon:last-of-type {
-    display: none;
-}
-
 /* ---- FLIP UNIT (pair of digits) ---- */
 .flip-unit-wrap {
     display: flex;
@@ -257,118 +252,6 @@ body {
 
 .theme-dot.selected {
     border-color: rgba(255, 255, 255, 0.9);
-}
-
-/* ---- COUNTDOWN OVERLAY ---- */
-.countdown-panel {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.45);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 50;
-}
-
-.countdown-panel.show {
-    display: flex;
-}
-
-.countdown-dialog {
-    background: var(--card-bg);
-    border-radius: 20px;
-    padding: 32px 40px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    align-items: center;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
-    min-width: 300px;
-}
-
-.countdown-dialog h3 {
-    color: var(--digit-color);
-    font-size: 20px;
-    font-weight: 800;
-}
-
-.cd-inputs {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
-
-.cd-field {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-}
-
-.cd-field label {
-    color: var(--digit-color);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    opacity: 0.7;
-    text-transform: uppercase;
-}
-
-.cd-field input {
-    width: 70px;
-    padding: 8px;
-    text-align: center;
-    font-size: 22px;
-    font-weight: 800;
-    background: rgba(255, 255, 255, 0.25);
-    border: 2px solid rgba(255, 255, 255, 0.4);
-    border-radius: 10px;
-    color: #fff;
-    outline: none;
-}
-
-.cd-colon {
-    color: #fff;
-    font-size: 24px;
-    font-weight: 900;
-    margin-top: 14px;
-}
-
-.cd-btn-row {
-    display: flex;
-    gap: 10px;
-}
-
-.cd-btn {
-    background: rgba(255, 255, 255, 0.3);
-    border: none;
-    cursor: pointer;
-    color: #fff;
-    font-size: 14px;
-    font-weight: 700;
-    border-radius: 14px;
-    padding: 9px 20px;
-    transition: background 0.2s;
-}
-
-.cd-btn:hover {
-    background: rgba(255, 255, 255, 0.5);
-}
-
-.cd-btn.start {
-    background: rgba(255, 255, 255, 0.55);
-    color: #c0397a;
-}
-
-/* ---- COUNTDOWN STATUS ---- */
-.cd-status {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--digit-color);
-    opacity: 0.75;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    min-height: 18px;
 }
 
 /* ---- FULLSCREEN ---- */

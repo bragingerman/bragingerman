@@ -91,37 +91,26 @@ function setDigit(el, val, animate) {
 // CLOCK STATE
 // =============================================
 let is24h = true;
-let mode = 'clock'; // 'clock' | 'countdown'
-let cdRemaining = 0;
-let cdTimer = null;
-let prevH1=-1,prevH2=-1,prevM1=-1,prevM2=-1,prevS1=-1,prevS2=-1;
+let prevH1=-1,prevH2=-1,prevM1=-1,prevM2=-1;
 
-let dH1, dH2, dM1, dM2, dS1, dS2, secGroup, secColon;
+let dH1, dH2, dM1, dM2;
 
 function pad(n){ return String(n).padStart(2,'0'); }
 
-function setSecondsVisible(show) {
-  if (secGroup) secGroup.style.display = show ? 'flex' : 'none';
-  if (secColon) secColon.style.display = show ? 'flex' : 'none';
-}
-
-function updateDisplay(hh, mm, ss) {
+function updateDisplay(hh, mm) {
   const h1=Math.floor(hh/10), h2=hh%10;
   const m1=Math.floor(mm/10), m2=mm%10;
-  const s1=Math.floor(ss/10), s2=ss%10;
   setDigit(dH1, h1, h1!==prevH1); prevH1=h1;
   setDigit(dH2, h2, h2!==prevH2); prevH2=h2;
   setDigit(dM1, m1, m1!==prevM1); prevM1=m1;
   setDigit(dM2, m2, m2!==prevM2); prevM2=m2;
-  setDigit(dS1, s1, s1!==prevS1); prevS1=s1;
-  setDigit(dS2, s2, s2!==prevS2); prevS2=s2;
 }
 
 function tickClock() {
   const now = new Date();
   let hh = now.getHours();
   if(!is24h) hh = hh % 12 || 12;
-  updateDisplay(hh, now.getMinutes(), now.getSeconds());
+  updateDisplay(hh, now.getMinutes());
 }
 
 function toggle24() {
@@ -129,7 +118,7 @@ function toggle24() {
   document.getElementById('btn24').textContent = is24h ? '24h' : '12h';
   document.getElementById('btn24').classList.toggle('active', !is24h);
   prevH1=prevH2=-1;
-  if(mode==='clock') tickClock();
+  tickClock();
 }
 
 function goFullscreen() {
@@ -142,70 +131,13 @@ function goFullscreen() {
 }
 
 // =============================================
-// COUNTDOWN
-// =============================================
-function openCountdown() {
-  document.getElementById('cdPanel').classList.add('show');
-}
-function closeCountdown() {
-  document.getElementById('cdPanel').classList.remove('show');
-}
-
-function startCountdown() {
-  const h = parseInt(document.getElementById('cdH').value)||0;
-  const m = parseInt(document.getElementById('cdM').value)||0;
-  const s = parseInt(document.getElementById('cdS').value)||0;
-  cdRemaining = h*3600 + m*60 + s;
-  if(cdRemaining <= 0) return;
-  closeCountdown();
-  if(cdTimer) clearInterval(cdTimer);
-  mode = 'countdown';
-  setSecondsVisible(true);
-  document.getElementById('cdStatus').textContent = '⏱ Countdown';
-  prevH1=prevH2=prevM1=prevM2=prevS1=prevS2=-1;
-  renderCountdown();
-  cdTimer = setInterval(()=>{
-    cdRemaining--;
-    if(cdRemaining <= 0) {
-      cdRemaining = 0;
-      renderCountdown();
-      clearInterval(cdTimer);
-      cdTimer = null;
-      mode = 'clock';
-      document.getElementById('cdStatus').textContent = '✅ Time is up!';
-      setTimeout(()=>{ document.getElementById('cdStatus').textContent=''; }, 4000);
-      startClock();
-    } else {
-      renderCountdown();
-    }
-  }, 1000);
-}
-
-function renderCountdown() {
-  setSecondsVisible(true);
-  const hh = Math.floor(cdRemaining/3600);
-  const mm = Math.floor((cdRemaining%3600)/60);
-  const ss = cdRemaining%60;
-  updateDisplay(hh, mm, ss);
-}
-
-function stopCountdown() {
-  if(cdTimer){ clearInterval(cdTimer); cdTimer=null; }
-  mode='clock';
-  document.getElementById('cdStatus').textContent='';
-  closeCountdown();
-  setSecondsVisible(false);
-  startClock();
-}
-
-// =============================================
 // MAIN CLOCK LOOP
 // =============================================
 let clockTimer = null;
 function startClock() {
   if(clockTimer) clearInterval(clockTimer);
   tickClock();
-  clockTimer = setInterval(()=>{ if(mode==='clock') tickClock(); }, 1000);
+  clockTimer = setInterval(tickClock, 1000);
 }
 
 // =============================================
@@ -218,18 +150,13 @@ function init() {
   dH2 = document.getElementById('d-h2');
   dM1 = document.getElementById('d-m1');
   dM2 = document.getElementById('d-m2');
-  dS1 = document.getElementById('d-s1');
-  dS2 = document.getElementById('d-s2');
-  secGroup = document.getElementById('fu-secs');
-  secColon = document.querySelector('#clockRow .colon:last-of-type');
 
-  console.log('Elements:', {dH1, dH2, dM1, dM2, dS1, dS2, secGroup, secColon});
+  console.log('Elements:', {dH1, dH2, dM1, dM2});
 
-  [dH1,dH2,dM1,dM2,dS1,dS2].forEach(buildDigit);
+  [dH1,dH2,dM1,dM2].forEach(buildDigit);
 
   buildThemePicker();
   applyTheme(currentTheme);
-  setSecondsVisible(false);
 
   console.log('About to start clock...');
   startClock();
