@@ -191,6 +191,34 @@ body {
     opacity: 0.7;
 }
 
+/* ---- LABELS (AM/PM and Weekday) ---- */
+.clock-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+    margin-top: -12px;
+}
+
+.label-ampm,
+.label-weekday {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--digit-color);
+    opacity: 0.8;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.label-ampm {
+    margin-left: 20px;
+}
+
+.label-weekday {
+    margin-right: 20px;
+}
+
 /* ---- CONTROLS BAR ---- */
 .controls {
     display: flex;

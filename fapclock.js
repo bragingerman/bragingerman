@@ -94,8 +94,29 @@ let is24h = true;
 let prevH1=-1,prevH2=-1,prevM1=-1,prevM2=-1;
 
 let dH1, dH2, dM1, dM2;
+let labelAmPm, labelWeekday;
+
+const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 function pad(n){ return String(n).padStart(2,'0'); }
+
+function updateLabels(now) {
+  // Update weekday (always shown)
+  if (labelWeekday) {
+    labelWeekday.textContent = WEEKDAYS[now.getDay()];
+  }
+
+  // Update AM/PM (only in 12h mode)
+  if (labelAmPm) {
+    if (!is24h) {
+      const hours = now.getHours();
+      labelAmPm.textContent = hours >= 12 ? 'PM' : 'AM';
+      labelAmPm.style.display = 'block';
+    } else {
+      labelAmPm.style.display = 'none';
+    }
+  }
+}
 
 function updateDisplay(hh, mm) {
   const h1=Math.floor(hh/10), h2=hh%10;
@@ -111,6 +132,7 @@ function tickClock() {
   let hh = now.getHours();
   if(!is24h) hh = hh % 12 || 12;
   updateDisplay(hh, now.getMinutes());
+  updateLabels(now);
 }
 
 function toggle24() {
@@ -150,8 +172,10 @@ function init() {
   dH2 = document.getElementById('d-h2');
   dM1 = document.getElementById('d-m1');
   dM2 = document.getElementById('d-m2');
+  labelAmPm = document.getElementById('labelAmPm');
+  labelWeekday = document.getElementById('labelWeekday');
 
-  console.log('Elements:', {dH1, dH2, dM1, dM2});
+  console.log('Elements:', {dH1, dH2, dM1, dM2, labelAmPm, labelWeekday});
 
   [dH1,dH2,dM1,dM2].forEach(buildDigit);
 
