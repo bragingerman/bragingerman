@@ -67,7 +67,7 @@ body {
 .flip-digit {
     position: relative;
     width: 90px;
-    height: 120px;
+    height: 150px; /* Было 120px — сделал выше */
     perspective: 600px;
     border-radius: 12px;
     overflow: hidden;
@@ -109,20 +109,22 @@ body {
 
 .flip-digit .static-top span,
 .flip-digit .static-bottom span {
-    font-size: 88px;
-    font-weight: 900;
+    font-size: 110px; /* Было 88px — сделал больше для вытянутости */
+    font-weight: 600; /* Было 900 — сделал тоньше */
     color: var(--digit-color);
     line-height: 1;
     letter-spacing: -2px;
     user-select: none;
+    transform-origin: center center;
+    transform: scaleY(1.4); /* Вытягиваем цифры по вертикали */
 }
 
 .flip-digit .static-top span {
-    transform: translateY(50%);
+    transform: translateY(50%) scaleY(1.4);
 }
 
 .flip-digit .static-bottom span {
-    transform: translateY(-50%);
+    transform: translateY(-50%) scaleY(1.4);
 }
 
 /* Animated flap */
@@ -144,12 +146,12 @@ body {
 }
 
 .flip-digit .flap span {
-    font-size: 88px;
-    font-weight: 900;
+    font-size: 110px; /* Было 88px */
+    font-weight: 600; /* Было 900 */
     color: var(--digit-color);
     line-height: 1;
     letter-spacing: -2px;
-    transform: translateY(50%);
+    transform: translateY(50%) scaleY(1.4); /* Вытягиваем цифры */
     user-select: none;
 }
 
@@ -300,12 +302,25 @@ body {
 @media (max-width: 480px) {
     .flip-digit {
         width: 68px;
-        height: 92px;
+        height: 115px; /* Было 92px — сделал выше */
     }
 
     .flip-digit .static-top span,
     .flip-digit .static-bottom span,
     .flip-digit .flap span {
-        font-size: 64px;
+        font-size: 84px; /* Было 64px — увеличил для вытянутости */
+        font-weight: 600; /* Сделал тоньше */
+    }
+
+    .flip-digit .static-top span {
+        transform: translateY(50%) scaleY(1.4);
+    }
+
+    .flip-digit .static-bottom span {
+        transform: translateY(-50%) scaleY(1.4);
+    }
+
+    .flip-digit .flap span {
+        transform: translateY(50%) scaleY(1.4);
     }
 }
