@@ -302,14 +302,14 @@ body {
 @media (max-width: 480px) {
     .flip-digit {
         width: 68px;
-        height: 115px; /* Было 92px — сделал выше */
+        height: 115px;
     }
 
     .flip-digit .static-top span,
     .flip-digit .static-bottom span,
     .flip-digit .flap span {
-        font-size: 84px; /* Было 64px — увеличил для вытянутости */
-        font-weight: 600; /* Сделал тоньше */
+        font-size: 84px;
+        font-weight: 600;
     }
 
     .flip-digit .static-top span {
@@ -322,5 +322,298 @@ body {
 
     .flip-digit .flap span {
         transform: translateY(50%) scaleY(1.4);
+    }
+}
+
+@media (max-width: 300px) {
+    .clock-wrap {
+        gap: 16px;
+    }
+
+    .clock-row {
+        gap: 8px;
+    }
+
+    .flip-unit-wrap {
+        gap: 4px;
+    }
+
+    .flip-digit {
+        width: 48px;
+        height: 80px;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px var(--shadow), 0 1px 0 var(--divider);
+    }
+
+    .flip-digit .static-top span,
+    .flip-digit .static-bottom span,
+    .flip-digit .flap span {
+        font-size: 60px;
+        font-weight: 600;
+        letter-spacing: -1px;
+    }
+
+    .flip-digit .static-top,
+    .flip-digit .flap {
+        border-radius: 8px 8px 0 0;
+    }
+
+    .flip-digit .static-bottom {
+        border-radius: 0 0 8px 8px;
+    }
+
+    .colon {
+        gap: 10px;
+        margin: 0 1px;
+    }
+
+    .colon-dot {
+        width: 6px;
+        height: 6px;
+    }
+
+    .clock-labels {
+        max-width: 280px;
+        margin-top: -8px;
+    }
+
+    .label-ampm,
+    .label-weekday {
+        font-size: 11px;
+        letter-spacing: 0.5px;
+    }
+
+    .label-ampm {
+        margin-left: 10px;
+    }
+
+    .label-weekday {
+        margin-right: 10px;
+    }
+
+    .controls {
+        gap: 6px;
+    }
+
+    .ctrl-btn {
+        padding: 5px 12px;
+        font-size: 11px;
+        border-radius: 16px;
+    }
+
+    .theme-picker {
+        padding: 4px 8px;
+        gap: 6px;
+    }
+
+    .theme-dot {
+        width: 18px;
+        height: 18px;
+        border-width: 2px;
+    }
+}
+
+@media (max-width: 200px) {
+    .clock-wrap {
+        gap: 12px;
+    }
+
+    .clock-row {
+        gap: 6px;
+    }
+
+    .flip-unit-wrap {
+        gap: 3px;
+    }
+
+    .flip-digit {
+        width: 36px;
+        height: 60px;
+        border-radius: 6px;
+        box-shadow: 0 3px 12px var(--shadow), 0 1px 0 var(--divider);
+    }
+
+    .flip-digit .static-top span,
+    .flip-digit .static-bottom span,
+    .flip-digit .flap span {
+        font-size: 45px;
+        font-weight: 600;
+        letter-spacing: -1px;
+    }
+
+    .flip-digit .static-top,
+    .flip-digit .flap {
+        border-radius: 6px 6px 0 0;
+        border-bottom: 1px solid var(--divider);
+    }
+
+    .flip-digit .static-bottom {
+        border-radius: 0 0 6px 6px;
+    }
+
+    .colon {
+        gap: 8px;
+        margin: 0;
+    }
+
+    .colon-dot {
+        width: 5px;
+        height: 5px;
+    }
+
+    .clock-labels {
+        max-width: 180px;
+        margin-top: -6px;
+    }
+
+    .label-ampm,
+    .label-weekday {
+        font-size: 9px;
+        letter-spacing: 0.3px;
+    }
+
+    .label-ampm {
+        margin-left: 6px;
+    }
+
+    .label-weekday {
+        margin-right: 6px;
+    }
+
+    .controls {
+        gap: 5px;
+    }
+
+    .ctrl-btn {
+        padding: 4px 10px;
+        font-size: 10px;
+        border-radius: 14px;
+    }
+
+    .theme-picker {
+        padding: 3px 6px;
+        gap: 5px;
+    }
+
+    .theme-dot {
+        width: 16px;
+        height: 16px;
+        border-width: 2px;
+    }
+}
+
+@media (max-width: 150px) {
+    .clock-wrap {
+        gap: 10px;
+    }
+
+    .clock-row {
+        gap: 4px;
+    }
+
+    .flip-unit-wrap {
+        gap: 2px;
+    }
+
+    .flip-digit {
+        width: 28px;
+        height: 48px;
+        border-radius: 5px;
+        box-shadow: 0 2px 10px var(--shadow), 0 1px 0 var(--divider);
+    }
+
+    .flip-digit .static-top span,
+    .flip-digit .static-bottom span,
+    .flip-digit .flap span {
+        font-size: 36px;
+        font-weight: 600;
+        letter-spacing: -0.5px;
+    }
+
+    .flip-digit .static-top,
+    .flip-digit .flap {
+        border-radius: 5px 5px 0 0;
+        border-bottom: 1px solid var(--divider);
+    }
+
+    .flip-digit .static-bottom {
+        border-radius: 0 0 5px 5px;
+    }
+
+    .colon {
+        gap: 6px;
+        margin: 0;
+    }
+
+    .colon-dot {
+        width: 4px;
+        height: 4px;
+    }
+
+    .clock-labels {
+        max-width: 140px;
+        margin-top: -4px;
+        flex-wrap: wrap;
+        gap: 4px;
+        justify-content: center;
+    }
+
+    .label-ampm,
+    .label-weekday {
+        font-size: 8px;
+        letter-spacing: 0.2px;
+    }
+
+    .label-ampm {
+        margin-left: 4px;
+    }
+
+    .label-weekday {
+        margin-right: 4px;
+    }
+
+    .controls {
+        gap: 4px;
+        width: 100%;
+    }
+
+    .ctrl-btn {
+        padding: 3px 8px;
+        font-size: 9px;
+        border-radius: 12px;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .theme-picker {
+        padding: 2px 5px;
+        gap: 4px;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .theme-dot {
+        width: 14px;
+        height: 14px;
+        border-width: 2px;
+    }
+
+    .theme-dot:hover {
+        transform: scale(1.1);
+    }
+
+    .btn-text {
+        display: none;
+    }
+
+    .controls {
+        flex-direction: row;
+        flex-wrap: nowrap;
+    }
+
+    .ctrl-btn {
+        flex: 0 1 auto;
+        padding: 4px 8px;
+        justify-content: center;
     }
 }
