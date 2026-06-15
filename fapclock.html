@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flip Clock</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --bg: #f69fdc;
+    --card-bg: #ff88be;
+    --card-top: #ff9fc8;
+    --card-bottom: #f077b0;
+    --digit-color: #fff;
+    --divider: rgba(255,255,255,0.3);
+    --ui-bg: rgba(255,255,255,0.25);
+    --ui-hover: rgba(255,255,255,0.45);
+    --ui-text: #fff;
+    --shadow: rgba(200,80,140,0.3);
+  }
+
+  @font-face {
+    font-family: 'franchiseregular';
+    src: local('franchiseregular'), local('Franchise Regular');
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  html, body {
+    min-height: 100%;
+    height: 100%;
+  }
+
+  body {
+    background: var(--bg);
+    min-height: 100vh;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'franchiseregular', sans-serif;
+    transition: background 0.4s;
+    overflow: hidden;
+  }
+
+  /* ---- CLOCK WRAPPER ---- */
+  .clock-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+  }
+
+  .clock-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  #fu-secs,
+  #clockRow .colon:last-of-type {
+    display: none;
+  }
+
+  /* ---- FLIP UNIT (pair of digits) ---- */
+  .flip-unit-wrap {
+    display: flex;
+    gap: 6px;
+  }
+
+  .flip-digit {
+    position: relative;
+    width: 90px;
+    height: 120px;
+    perspective: 600px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 28px var(--shadow), 0 2px 0 var(--divider);
+  }
+
+  /* Static top half */
+  .flip-digit .static-top {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 50%;
+    background: var(--card-top);
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    overflow: hidden;
+    border-bottom: 2px solid var(--divider);
+    z-index: 2;
+  }
+
+  /* Static bottom half */
+  .flip-digit .static-bottom {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 50%;
+    background: var(--card-bottom);
+    border-radius: 0 0 12px 12px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    overflow: hidden;
+    z-index: 2;
+  }
+
+  .flip-digit .static-top span,
+  .flip-digit .static-bottom span {
+    font-size: 88px;
+    font-weight: 900;
+    color: var(--digit-color);
+    line-height: 1;
+    letter-spacing: -2px;
+    user-select: none;
+  }
+  .flip-digit .static-top span { transform: translateY(50%); }
+  .flip-digit .static-bottom span { transform: translateY(-50%); }
+
+  /* Animated flap */
+  .flip-digit .flap {
+    position: absolute;
+    left: 0; right: 0;
+    height: 50%;
+    transform-origin: bottom center;
+    z-index: 3;
+    border-radius: 12px 12px 0 0;
+    overflow: hidden;
+    backface-visibility: hidden;
+    background: var(--card-top);
+    border-bottom: 2px solid var(--divider);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .flip-digit .flap span {
+    font-size: 88px;
+    font-weight: 900;
+    color: var(--digit-color);
+    line-height: 1;
+    letter-spacing: -2px;
+    transform: translateY(50%);
+    user-select: none;
+  }
+  .flip-digit .flap.animate {
+    animation: flipDown 0.5s ease-in-out forwards;
+    background: var(--card-top);
+  }
+  @keyframes flipDown {
+    0%   { transform: rotateX(0deg); box-shadow: none; }
+    50%  { transform: rotateX(-90deg); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+    100% { transform: rotateX(-180deg); }
+  }
+
+  /* ---- COLON ---- */
+  .colon {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-self: center;
+    margin: 0 2px;
+  }
+  .colon-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--digit-color);
+    opacity: 0.7;
+  }
+
+  /* ---- CONTROLS BAR ---- */
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .ctrl-btn {
+    background: var(--ui-bg);
+    border: none;
+    color: var(--ui-text);
+    border-radius: 20px;
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    backdrop-filter: blur(6px);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .ctrl-btn:hover { background: var(--ui-hover); }
+  .ctrl-btn.active { background: rgba(255,255,255,0.55); color: #c0397a; }
+
+  /* ---- THEME PICKER ---- */
+  .theme-picker {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background: var(--ui-bg);
+    border-radius: 24px;
+    padding: 6px 12px;
+    backdrop-filter: blur(6px);
+  }
+  .theme-dot {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: border-color 0.2s, transform 0.15s;
+    flex-shrink: 0;
+  }
+  .theme-dot:hover { transform: scale(1.15); }
+  .theme-dot.selected { border-color: rgba(255,255,255,0.9); }
+
+  /* ---- COUNTDOWN OVERLAY ---- */
+  .countdown-panel {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+  }
+  .countdown-panel.show { display: flex; }
+  .countdown-dialog {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 32px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    align-items: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    min-width: 300px;
+  }
+  .countdown-dialog h3 {
+    color: var(--digit-color);
+    font-size: 20px;
+    font-weight: 800;
+  }
+  .cd-inputs {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .cd-field {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .cd-field label {
+    color: var(--digit-color);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    opacity: 0.7;
+    text-transform: uppercase;
+  }
+  .cd-field input {
+    width: 70px;
+    padding: 8px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 800;
+    background: rgba(255,255,255,0.25);
+    border: 2px solid rgba(255,255,255,0.4);
+    border-radius: 10px;
+    color: #fff;
+    outline: none;
+  }
+  .cd-colon { color: #fff; font-size: 24px; font-weight: 900; margin-top: 14px; }
+  .cd-btn-row { display: flex; gap: 10px; }
+  .cd-btn {
+    background: rgba(255,255,255,0.3);
+    border: none; cursor: pointer;
+    color: #fff; font-size: 14px; font-weight: 700;
+    border-radius: 14px;
+    padding: 9px 20px;
+    transition: background 0.2s;
+  }
+  .cd-btn:hover { background: rgba(255,255,255,0.5); }
+  .cd-btn.start { background: rgba(255,255,255,0.55); color: #c0397a; }
+
+  /* ---- COUNTDOWN STATUS ---- */
+  .cd-status {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--digit-color);
+    opacity: 0.75;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    min-height: 18px;
+  }
+
+  /* ---- FULLSCREEN ---- */
+  :fullscreen body, :-webkit-full-screen body {
+    min-height: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  :fullscreen .controls, :-webkit-full-screen .controls { margin-top: 20px; }
+
+  @media (max-width: 480px) {
+    .flip-digit { width: 68px; height: 92px; }
+    .flip-digit .static-top span,
+    .flip-digit .static-bottom span,
+    .flip-digit .flap span { font-size: 64px; }
+    .unit-label { width: 68px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="clock-wrap">
+
+  <!-- CLOCK DISPLAY -->
+  <div class="clock-row" id="clockRow">
+    <!-- Hours -->
+    <div class="flip-unit-wrap" id="fu-hours">
+      <div class="flip-digit" id="d-h1"></div>
+      <div class="flip-digit" id="d-h2"></div>
+    </div>
+    <div class="colon"><div class="colon-dot"></div><div class="colon-dot"></div></div>
+    <!-- Minutes -->
+    <div class="flip-unit-wrap" id="fu-mins">
+      <div class="flip-digit" id="d-m1"></div>
+      <div class="flip-digit" id="d-m2"></div>
+    </div>
+    <div class="colon"><div class="colon-dot"></div><div class="colon-dot"></div></div>
+    <!-- Seconds -->
+    <div class="flip-unit-wrap" id="fu-secs">
+      <div class="flip-digit" id="d-s1"></div>
+      <div class="flip-digit" id="d-s2"></div>
+    </div>
+  </div>
+
+  <div class="cd-status" id="cdStatus"></div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <button class="ctrl-btn" id="btn24" onclick="toggle24()">24h</button>
+    <button class="ctrl-btn" id="btnCD" onclick="openCountdown()">⏱ Timer</button>
+    <button class="ctrl-btn" onclick="goFullscreen()">⛶ Fullscreen</button>
+
+    <!-- THEME PICKER -->
+    <div class="theme-picker" id="themePicker"></div>
+  </div>
+</div>
+
+<!-- COUNTDOWN PANEL -->
+<div class="countdown-panel" id="cdPanel">
+  <div class="countdown-dialog">
+    <h3>⏱ Countdown</h3>
+    <div class="cd-inputs">
+      <div class="cd-field">
+        <label>Hours</label>
+        <input type="number" id="cdH" min="0" max="99" value="0">
+      </div>
+      <div class="cd-colon">:</div>
+      <div class="cd-field">
+        <label>Min</label>
+        <input type="number" id="cdM" min="0" max="59" value="5">
+      </div>
+      <div class="cd-colon">:</div>
+      <div class="cd-field">
+        <label>Sec</label>
+        <input type="number" id="cdS" min="0" max="59" value="0">
+      </div>
+    </div>
+    <div class="cd-btn-row">
+      <button class="cd-btn start" onclick="startCountdown()">▶ Start</button>
+      <button class="cd-btn" onclick="stopCountdown()">■ Stop</button>
+      <button class="cd-btn" onclick="closeCountdown()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// =============================================
+// THEMES
+// =============================================
+const THEMES = [
+  { bg:'#1a1a2e', card:'#16213e', top:'#1e2a52', bottom:'#111827', color:'#e0c3fc', shadow:'rgba(90,50,180,0.4)', name:'Night' },
+  { bg:'#f69fdc', card:'#ff88be', top:'#ff9fc8', bottom:'#f077b0', color:'#fff', shadow:'rgba(200,80,140,0.3)', name:'Pink' },
+  { bg:'#b8e4f9', card:'#7ecef4', top:'#94d9f7', bottom:'#5ec2ef', color:'#fff', shadow:'rgba(60,130,200,0.3)', name:'Blue' },
+  { bg:'#d4f1c4', card:'#8ed97a', top:'#a2e28f', bottom:'#72cc64', color:'#fff', shadow:'rgba(60,160,80,0.3)', name:'Green' },
+  { bg:'#fff3cd', card:'#ffd966', top:'#ffe080', bottom:'#f5c842', color:'#7a5700', shadow:'rgba(180,130,0,0.25)', name:'Yellow' },
+  { bg:'#ffe5d9', card:'#ffb3a3', top:'#ffc4b5', bottom:'#ff9580', color:'#fff', shadow:'rgba(220,80,50,0.3)', name:'Peach' },
+  { bg:'#e8d5f5', card:'#c49ed9', top:'#d1b0e8', bottom:'#b580cf', color:'#fff', shadow:'rgba(140,70,200,0.3)', name:'Lilac' },
+  { bg:'#222', card:'#333', top:'#3a3a3a', bottom:'#222', color:'#fff', shadow:'rgba(0,0,0,0.5)', name:'Dark' },
+  { bg:'#fff', card:'#f0f0f0', top:'#f8f8f8', bottom:'#e0e0e0', color:'#333', shadow:'rgba(0,0,0,0.15)', name:'White' },
+];
+
+let currentTheme = 1;
+
+function applyTheme(idx) {
+  const t = THEMES[idx];
+  const r = document.documentElement.style;
+  r.setProperty('--bg', t.bg);
+  r.setProperty('--card-bg', t.card);
+  r.setProperty('--card-top', t.top);
+  r.setProperty('--card-bottom', t.bottom);
+  r.setProperty('--digit-color', t.color);
+  r.setProperty('--divider', 'rgba(0,0,0,0.15)');
+  r.setProperty('--ui-bg', 'rgba(128,128,128,0.25)');
+  r.setProperty('--ui-hover', 'rgba(128,128,128,0.45)');
+  r.setProperty('--ui-text', t.color);
+  r.setProperty('--shadow', t.shadow);
+  currentTheme = idx;
+  document.querySelectorAll('.theme-dot').forEach((d,i)=>{
+    d.classList.toggle('selected', i===idx);
+  });
+}
+
+function buildThemePicker() {
+  const p = document.getElementById('themePicker');
+  THEMES.forEach((t,i) => {
+    const d = document.createElement('div');
+    d.className = 'theme-dot' + (i===currentTheme?' selected':'');
+    d.style.background = t.card;
+    d.title = t.name;
+    d.onclick = () => applyTheme(i);
+    // dark border for light themes
+    if(['#fff','#f0f0f0','#fff3cd'].includes(t.card)) d.style.border='3px solid rgba(0,0,0,0.2)';
+    p.appendChild(d);
+  });
+}
+
+// =============================================
+// FLIP DIGIT SYSTEM
+// =============================================
+function buildDigit(el) {
+  el.innerHTML = `
+    <div class="static-top"><span>0</span></div>
+    <div class="static-bottom"><span>0</span></div>
+    <div class="flap"><span>0</span></div>
+  `;
+  el._current = 0;
+}
+
+function setDigit(el, val, animate) {
+  val = parseInt(val);
+  if (el._current === val && !animate) return;
+  const st = el.querySelector('.static-top span');
+  const sb = el.querySelector('.static-bottom span');
+  const flap = el.querySelector('.flap');
+  const fs = flap.querySelector('span');
+  const current = el._current;
+
+  if (animate && current !== val) {
+    st.textContent = current;
+    sb.textContent = current;
+    fs.textContent = current;
+    flap.classList.remove('animate');
+    void flap.offsetWidth; // reflow
+    flap.classList.add('animate');
+    setTimeout(() => {
+      st.textContent = val;
+      sb.textContent = val;
+      fs.textContent = val;
+      flap.classList.remove('animate');
+    }, 520);
+  } else {
+    st.textContent = val;
+    sb.textContent = val;
+    fs.textContent = val;
+  }
+  el._current = val;
+}
+
+// =============================================
+// CLOCK STATE
+// =============================================
+let is24h = true;
+let mode = 'clock'; // 'clock' | 'countdown'
+let cdRemaining = 0;
+let cdTimer = null;
+let prevH1=-1,prevH2=-1,prevM1=-1,prevM2=-1,prevS1=-1,prevS2=-1;
+
+const dH1 = document.getElementById('d-h1');
+const dH2 = document.getElementById('d-h2');
+const dM1 = document.getElementById('d-m1');
+const dM2 = document.getElementById('d-m2');
+const dS1 = document.getElementById('d-s1');
+const dS2 = document.getElementById('d-s2');
+const secGroup = document.getElementById('fu-secs');
+const secColon = document.querySelector('#clockRow .colon:last-of-type');
+
+[dH1,dH2,dM1,dM2,dS1,dS2].forEach(buildDigit);
+
+function pad(n){ return String(n).padStart(2,'0'); }
+
+function setSecondsVisible(show) {
+  secGroup.style.display = show ? 'flex' : 'none';
+  secColon.style.display = show ? 'flex' : 'none';
+}
+
+function updateDisplay(hh, mm, ss) {
+  const h1=Math.floor(hh/10), h2=hh%10;
+  const m1=Math.floor(mm/10), m2=mm%10;
+  const s1=Math.floor(ss/10), s2=ss%10;
+  setDigit(dH1, h1, h1!==prevH1); prevH1=h1;
+  setDigit(dH2, h2, h2!==prevH2); prevH2=h2;
+  setDigit(dM1, m1, m1!==prevM1); prevM1=m1;
+  setDigit(dM2, m2, m2!==prevM2); prevM2=m2;
+  setDigit(dS1, s1, s1!==prevS1); prevS1=s1;
+  setDigit(dS2, s2, s2!==prevS2); prevS2=s2;
+}
+
+function tickClock() {
+  const now = new Date();
+  let hh = now.getHours();
+  if(!is24h) hh = hh % 12 || 12;
+  updateDisplay(hh, now.getMinutes(), now.getSeconds());
+}
+
+function toggle24() {
+  is24h = !is24h;
+  document.getElementById('btn24').textContent = is24h ? '24h' : '12h';
+  document.getElementById('btn24').classList.toggle('active', !is24h);
+  prevH1=prevH2=-1;
+  if(mode==='clock') tickClock();
+}
+
+function goFullscreen() {
+  const el = document.documentElement;
+  if(!document.fullscreenElement) {
+    (el.requestFullscreen||el.webkitRequestFullscreen||el.mozRequestFullScreen).call(el);
+  } else {
+    (document.exitFullscreen||document.webkitExitFullscreen||document.mozCancelFullScreen).call(document);
+  }
+}
+
+// =============================================
+// COUNTDOWN
+// =============================================
+function openCountdown() {
+  document.getElementById('cdPanel').classList.add('show');
+}
+function closeCountdown() {
+  document.getElementById('cdPanel').classList.remove('show');
+}
+
+function startCountdown() {
+  const h = parseInt(document.getElementById('cdH').value)||0;
+  const m = parseInt(document.getElementById('cdM').value)||0;
+  const s = parseInt(document.getElementById('cdS').value)||0;
+  cdRemaining = h*3600 + m*60 + s;
+  if(cdRemaining <= 0) return;
+  closeCountdown();
+  if(cdTimer) clearInterval(cdTimer);
+  mode = 'countdown';
+  setSecondsVisible(true);
+  document.getElementById('cdStatus').textContent = '⏱ Countdown';
+  prevH1=prevH2=prevM1=prevM2=prevS1=prevS2=-1;
+  renderCountdown();
+  cdTimer = setInterval(()=>{
+    cdRemaining--;
+    if(cdRemaining <= 0) {
+      cdRemaining = 0;
+      renderCountdown();
+      clearInterval(cdTimer);
+      cdTimer = null;
+      mode = 'clock';
+      document.getElementById('cdStatus').textContent = '✅ Time is up!';
+      setTimeout(()=>{ document.getElementById('cdStatus').textContent=''; }, 4000);
+      startClock();
+    } else {
+      renderCountdown();
+    }
+  }, 1000);
+}
+
+function renderCountdown() {
+  setSecondsVisible(true);
+  const hh = Math.floor(cdRemaining/3600);
+  const mm = Math.floor((cdRemaining%3600)/60);
+  const ss = cdRemaining%60;
+  updateDisplay(hh, mm, ss);
+}
+
+function stopCountdown() {
+  if(cdTimer){ clearInterval(cdTimer); cdTimer=null; }
+  mode='clock';
+  document.getElementById('cdStatus').textContent='';
+  closeCountdown();
+  setSecondsVisible(false);
+  startClock();
+}
+
+// =============================================
+// MAIN CLOCK LOOP
+// =============================================
+let clockTimer = null;
+function startClock() {
+  if(clockTimer) clearInterval(clockTimer);
+  tickClock();
+  clockTimer = setInterval(()=>{ if(mode==='clock') tickClock(); }, 1000);
+}
+
+// =============================================
+// INIT
+// =============================================
+buildThemePicker();
+applyTheme(currentTheme);
+setSecondsVisible(false);
+startClock();
+</script>
+</body>
+</html>
