@@ -202,3 +202,34 @@ if (document.readyState === 'loading') {
 } else {
   init();
 }
+
+// =============================================
+// PWA SERVICE WORKER REGISTRATION
+// =============================================
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then((reg) => console.log('Service Worker registered:', reg))
+      .catch((err) => console.error('Service Worker registration failed:', err));
+  });
+}
+
+// PWA Install Prompt
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  console.log('PWA install prompt available');
+
+  // Optional: show custom install button
+  // You can add a button in HTML and trigger installation like this:
+  // installButton.addEventListener('click', () => {
+  //   deferredPrompt.prompt();
+  //   deferredPrompt.userChoice.then((choiceResult) => {
+  //     if (choiceResult.outcome === 'accepted') {
+  //       console.log('User accepted the install prompt');
+  //     }
+  //     deferredPrompt = null;
+  //   });
+  // });
+});
