@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Full moon favicon">
+  <defs>
+    <linearGradient id="moonGlow" x1="18" y1="16" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFF8D6"/>
+      <stop offset="50%" stop-color="#F6D57A"/>
+      <stop offset="100%" stop-color="#D89B34"/>
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="28" fill="#0F172A"/>
+  <circle cx="32" cy="32" r="24" fill="url(#moonGlow)"/>
+  <circle cx="24" cy="26" r="3.5" fill="#C07A1C" opacity="0.7"/>
+  <circle cx="39" cy="24" r="2.6" fill="#A76312" opacity="0.75"/>
+  <circle cx="28" cy="40" r="2.1" fill="#A76312" opacity="0.7"/>
+  <ellipse cx="38" cy="37" rx="4.2" ry="2.7" fill="#C07A1C" opacity="0.6"/>
+  <ellipse cx="22" cy="35" rx="3.3" ry="2.2" fill="#B46A1A" opacity="0.65"/>
+  <circle cx="43" cy="39" r="1.7" fill="#8F4D10" opacity="0.7"/>
+</svg>

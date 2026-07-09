@@ -1,0 +1,179 @@
+/* ----- CSS variables (themes) ----- */
+:root {
+    --bg: #ffffff;
+    --text: #191919;
+    --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    --border-radius: 20px;
+    --img-size: 120px;
+    --gap: 20px;
+    --font: 'Lora', 'Segoe UI', system-ui, -apple-system, serif;
+}
+
+[data-theme="dark"] {
+    --bg: #191919;
+    --text: #ffffff;
+    --card-shadow: 0 8px 20px rgba(255, 255, 255, 0.05);
+}
+
+/* ----- General styles ----- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    transition: background 0.3s, color 0.3s;
+    padding: 16px;
+}
+
+/* ----- Widget card ----- */
+.widget {
+    background: var(--bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    gap: var(--gap);
+    max-width: 480px;
+    width: 100%;
+    transition: background 0.3s, box-shadow 0.3s;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+/* Moon image container */
+.moon-frame {
+    width: var(--img-size);
+    height: var(--img-size);
+    border-radius: 50%;
+    background: radial-gradient(circle at center, #4a4a4a 0%, #2a2a2a 100%);
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+.video-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 0;
+    pointer-events: none;
+    border-radius: inherit;
+}
+
+.moon-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    transition: transform 0.3s ease;
+    transform-origin: center;
+    position: relative;
+    z-index: 1;
+}
+
+.moon-frame:hover .moon-image {
+    transform: rotate(15deg);
+}
+
+/* Info block */
+.info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+    z-index: 1;
+}
+
+.info .date {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.info .phase {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.info .zodiac {
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+/* Theme toggle button (circular) */
+.theme-toggle {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s, color 0.3s, transform 0.2s;
+    padding: 0;
+    line-height: 1;
+}
+
+.theme-toggle {
+    z-index: 2;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.05);
+}
+
+.theme-toggle:active {
+    transform: scale(0.95);
+}
+
+/* Responsive */
+@media (max-width: 400px) {
+    .widget {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .info {
+        align-items: center;
+    }
+
+    .theme-toggle {
+        top: 12px;
+        right: 12px;
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+    }
+}
