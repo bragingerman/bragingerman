@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="ru" data-theme="light">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌙 Лунный виджет</title>
+    <title>🌙 Moon Widget</title>
     <style>
-        /* ----- CSS-переменные (темы) ----- */
+        /* ----- CSS variables (themes) ----- */
         :root {
             --bg: #ffffff;
             --text: #191919;
@@ -22,7 +22,7 @@
             --card-shadow: 0 8px 20px rgba(255, 255, 255, 0.05);
         }
 
-        /* ----- Общие стили ----- */
+        /* ----- General styles ----- */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -42,7 +42,7 @@
             padding: 16px;
         }
 
-        /* ----- Карточка виджета ----- */
+        /* ----- Widget card ----- */
         .widget {
             background: var(--bg);
             border-radius: var(--border-radius);
@@ -57,18 +57,18 @@
             position: relative;
         }
 
-        /* Изображение Луны */
+        /* Moon image */
         .moon-image {
             width: var(--img-size);
             height: var(--img-size);
             border-radius: 50%;
             object-fit: cover;
-            background: #2a2a2a; /* фон на случай загрузки */
+            background: #2a2a2a; /* background in case of loading */
             flex-shrink: 0;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
-        /* Блок информации */
+        /* Info block */
         .info {
             flex: 1;
             display: flex;
@@ -92,7 +92,7 @@
             opacity: 0.8;
         }
 
-        /* Кнопка переключения темы (круглая) */
+        /* Theme toggle button (circular) */
         .theme-toggle {
             position: absolute;
             top: 16px;
@@ -120,7 +120,7 @@
             transform: scale(0.95);
         }
 
-        /* Адаптив */
+        /* Responsive */
         @media (max-width: 400px) {
             .widget {
                 flex-direction: column;
@@ -144,26 +144,26 @@
 <body>
 
     <div class="widget">
-        <!-- Кнопка переключения темы -->
+        <!-- Theme toggle button -->
         <button class="theme-toggle" id="btnTheme" onclick="toggleTheme()">☀</button>
 
-        <!-- Картинка Луны -->
-        <img class="moon-image" id="moonImg" src="images/full.png" alt="Луна" />
+        <!-- Moon image -->
+        <img class="moon-image" id="moonImg" src="images/full.png" alt="Moon" />
 
-        <!-- Информация -->
+        <!-- Info -->
         <div class="info">
             <div class="date" id="dateDisplay">--/--/----</div>
-            <div class="phase" id="phaseDisplay">Загрузка...</div>
+            <div class="phase" id="phaseDisplay">Loading...</div>
             <div class="zodiac" id="zodiacDisplay">--</div>
         </div>
     </div>
 
     <script>
         // ============================================================
-        //  1. Астрономические расчёты (по алгоритму Мееса)
+        //  1. Astronomical calculations (Meeus algorithm)
         // ============================================================
 
-        // ----- Преобразование даты в юлианский день (UT) -----
+        // ----- Date to Julian Day conversion (UT) -----
         function toJulianDay(date) {
             const year = date.getUTCFullYear();
             const month = date.getUTCMonth() + 1;
@@ -175,12 +175,12 @@
             return day + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
         }
 
-        // ----- Эклиптическая долгота Луны (в градусах, 0..360) -----
+        // ----- Moon ecliptic longitude (degrees, 0..360) -----
         function getMoonLongitude(date) {
             const jd = toJulianDay(date);
             const T = (jd - 2451545.0) / 36525;
 
-            // Средние элементы (в градусах)
+            // Mean elements (degrees)
             const L_deg = 218.3164477 + 481267.88123421 * T - 0.0015786 * T * T + T * T * T / 538841 - T * T * T * T / 65194000;
             const D_deg = 297.8501921 + 445267.1114034 * T - 0.0018819 * T * T + T * T * T / 545868 - T * T * T * T / 113065000;
             const M_deg = 357.5291092 + 35999.0502909 * T - 0.0001536 * T * T + T * T * T / 24490000;
@@ -193,7 +193,7 @@
             const Mp = Mp_deg * Math.PI / 180;
             const F = F_deg * Math.PI / 180;
 
-            // Поправки к долготе (основные члены)
+            // Longitude corrections (main terms)
             let sum = 0;
             sum += 6.289 * Math.sin(Mp);
             sum += 1.274 * Math.sin(2 * D - Mp);
@@ -221,57 +221,57 @@
             return lon;
         }
 
-        // ----- Эклиптическая долгота Солнца (упрощённо) -----
+        // ----- Sun ecliptic longitude (simplified) -----
         function getSunLongitude(date) {
             const jd = toJulianDay(date);
             const T = (jd - 2451545.0) / 36525;
 
-            // Средняя долгота Солнца (в градусах)
+            // Mean solar longitude (degrees)
             let L0 = 280.46646 + 36000.76983 * T + 0.0003032 * T * T;
             L0 = ((L0 % 360) + 360) % 360;
 
-            // Средняя аномалия (градусы)
+            // Mean anomaly (degrees)
             const M = 357.52911 + 35999.05029 * T - 0.0001537 * T * T;
             const M_rad = M * Math.PI / 180;
 
-            // Уравнение центра
+            // Equation of center
             const C = (1.914602 - 0.004817 * T - 0.000014 * T * T) * Math.sin(M_rad)
                 + (0.019993 - 0.000101 * T) * Math.sin(2 * M_rad)
                 + 0.000289 * Math.sin(3 * M_rad);
 
-            // Истинная долгота
+            // True longitude
             let sunLon = L0 + C;
             sunLon = ((sunLon % 360) + 360) % 360;
             return sunLon;
         }
 
-        // ----- Определение фазы Луны (возвращает объект с названием и индексом картинки) -----
+        // ----- Moon phase determination (returns object with name and image index) -----
         function getMoonPhase(date) {
             const moonLon = getMoonLongitude(date);
             const sunLon = getSunLongitude(date);
 
-            // Разность долгот (0..360)
+            // Longitude difference (0..360)
             let diff = moonLon - sunLon;
             diff = ((diff % 360) + 360) % 360;
 
-            // Возраст Луны в днях (период 29.53058867)
+            // Moon age in days (period 29.53058867)
             const age = (diff / 360) * 29.53058867; // 0..29.53
 
-            // Определяем фазу по возрасту (8 категорий)
+            // Determine phase by age (8 categories)
             const phaseData = [
-                { min: 0, max: 1.5, name: 'Новолуние', file: 'new' },
-                { min: 1.5, max: 6.5, name: 'Молодая луна', file: 'waxing_crescent' },
-                { min: 6.5, max: 9.5, name: 'Первая четверть', file: 'first_quarter' },
-                { min: 9.5, max: 13.5, name: 'Растущая луна', file: 'waxing_gibbous' },
-                { min: 13.5, max: 16.5, name: 'Полнолуние', file: 'full' },
-                { min: 16.5, max: 20.5, name: 'Убывающая луна', file: 'waning_gibbous' },
-                { min: 20.5, max: 23.5, name: 'Последняя четверть', file: 'last_quarter' },
-                { min: 23.5, max: 29.53, name: 'Старая луна', file: 'waning_crescent' }
+                { min: 0, max: 1.5, name: 'New Moon', file: 'new' },
+                { min: 1.5, max: 6.5, name: 'Waxing Crescent', file: 'waxing_crescent' },
+                { min: 6.5, max: 9.5, name: 'First Quarter', file: 'first_quarter' },
+                { min: 9.5, max: 13.5, name: 'Waxing Gibbous', file: 'waxing_gibbous' },
+                { min: 13.5, max: 16.5, name: 'Full Moon', file: 'full' },
+                { min: 16.5, max: 20.5, name: 'Waning Gibbous', file: 'waning_gibbous' },
+                { min: 20.5, max: 23.5, name: 'Last Quarter', file: 'last_quarter' },
+                { min: 23.5, max: 29.53, name: 'Waning Crescent', file: 'waning_crescent' }
             ];
 
-            // Корректировка для возраста около 0 (новолуние) – возраст может быть близок к 29.53
+            // Adjustment for age near 0 (new moon) - age may be close to 29.53
             let ageAdjusted = age;
-            if (ageAdjusted >= 29.0) ageAdjusted = 0; // если почти 29.53, считаем новолунием
+            if (ageAdjusted >= 29.0) ageAdjusted = 0; // if almost 29.53, count as new moon
 
             let phase = phaseData.find(p => ageAdjusted >= p.min && ageAdjusted < p.max);
             if (!phase) phase = phaseData[0]; // fallback
@@ -279,50 +279,50 @@
             return { name: phase.name, file: phase.file, age: age };
         }
 
-        // ----- Определение знака зодиака (тропический) -----
+        // ----- Zodiac sign determination (tropical) -----
         function getZodiacSign(longitudeDeg) {
             const signs = [
-                'Овен', 'Телец', 'Близнецы', 'Рак',
-                'Лев', 'Дева', 'Весы', 'Скорпион',
-                'Стрелец', 'Козерог', 'Водолей', 'Рыбы'
+                'Aries', 'Taurus', 'Gemini', 'Cancer',
+                'Leo', 'Virgo', 'Libra', 'Scorpio',
+                'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'
             ];
             const index = Math.floor(longitudeDeg / 30) % 12;
             return signs[index];
         }
 
         // ============================================================
-        //  2. Обновление виджета
+        //  2. Update widget
         // ============================================================
 
         function updateWidget() {
-            // Берём текущее время (локальное)
+            // Get current time (local)
             const now = new Date();
 
-            // Дата в формате dd/mm/yyyy
+            // Date in dd/mm/yyyy format
             const dd = String(now.getDate()).padStart(2, '0');
             const mm = String(now.getMonth() + 1).padStart(2, '0');
             const yyyy = now.getFullYear();
             document.getElementById('dateDisplay').textContent = `${dd}/${mm}/${yyyy}`;
 
-            // Фаза Луны
+            // Moon phase
             const phaseInfo = getMoonPhase(now);
             document.getElementById('phaseDisplay').textContent = phaseInfo.name;
 
-            // Знак зодиака (по долготе Луны)
+            // Zodiac sign (by Moon's longitude)
             const moonLon = getMoonLongitude(now);
             const sign = getZodiacSign(moonLon);
-            document.getElementById('zodiacDisplay').textContent = `♈ ${sign}`; // можно символ знака добавить
+            document.getElementById('zodiacDisplay').textContent = `♈ ${sign}`; // can add zodiac symbol
 
-            // Картинка
+            // Image
             const imgPath = `images/${phaseInfo.file}.png`;
             document.getElementById('moonImg').src = imgPath;
         }
 
         // ============================================================
-        //  3. Тёмная / светлая тема
+        //  3. Dark / light theme
         // ============================================================
 
-        let themeOverride = null; // 'dark' или 'light', null — системная
+        let themeOverride = null; // 'dark' or 'light', null - system
 
         function applyTheme() {
             if (themeOverride) {
@@ -344,40 +344,40 @@
                 (themeOverride === null && window.matchMedia('(prefers-color-scheme: dark)').matches);
             themeOverride = currentlyDark ? 'light' : 'dark';
             applyTheme();
-            // сохраняем в localStorage
+            // save to localStorage
             localStorage.setItem('theme', themeOverride);
         }
 
-        // Загрузка сохранённой темы
+        // Load saved theme
         function loadTheme() {
             const saved = localStorage.getItem('theme');
             if (saved === 'dark' || saved === 'light') {
                 themeOverride = saved;
             } else {
-                themeOverride = null; // системная
+                themeOverride = null; // system
             }
             applyTheme();
         }
 
-        // Следим за изменением системной темы
+        // Watch for system theme changes
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
             if (!themeOverride) {
-                applyTheme(); // обновит иконку
+                applyTheme(); // will update icon
             }
         });
 
         // ============================================================
-        //  4. Инициализация и автообновление
+        //  4. Initialization and auto-update
         // ============================================================
 
         loadTheme();
         updateWidget();
 
-        // Обновление каждый час (3600000 мс)
+        // Update every hour (3600000 ms)
         setInterval(updateWidget, 3600000);
 
-        // Дополнительно обновляем тему при загрузке (на случай, если системная тема изменилась)
-        // Это уже сделано через loadTheme и applyTheme.
+        // Additionally update theme on load (in case system theme changed)
+        // This is already done via loadTheme and applyTheme.
     </script>
 
 </body>
